@@ -1,0 +1,39 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thanh toán</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+<body>
+    {% include 'store/partials/navbar.html' %}
+
+    <main class="container">
+        <h1>Thanh toán</h1>
+        <div class="grid-2">
+            <div class="card">
+                <form method="post">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <button class="btn primary" type="submit">Xác nhận đặt hàng</button>
+                </form>
+            </div>
+            <div class="card">
+                <h3>Đơn hàng</h3>
+                <ul>
+                    {% for item in cart %}
+                    <li>{{ item.product.name }} × {{ item.quantity }} — {{ item.total }} ₫</li>
+                    {% endfor %}
+                </ul>
+                <p><strong>Tổng:</strong> {{ cart.total_amount }} ₫</p>
+            </div>
+        </div>
+    </main>
+
+    {% include 'store/partials/footer.html' %}
+</body>
+</html>
+
+

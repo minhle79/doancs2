@@ -1,0 +1,57 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ product.name }} - Cửa hàng</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+<body>
+    {% include 'store/partials/navbar.html' %}
+
+    <main class="container">
+        <div class="product-detail card">
+            <div class="media">
+                {% if product.image %}
+                <img src="{{ product.image.url }}" alt="{{ product.name }}" />
+                {% else %}
+                <img src="{% static 'img/placeholder.png' %}" alt="{{ product.name }}" />
+                {% endif %}
+            </div>
+            <div class="info">
+                <h1>{{ product.name }}</h1>
+                <p class="muted">{{ product.brand.name }} • {{ product.category.name }}</p>
+                <p class="price">{{ product.price }} ₫</p>
+                <p>{{ product.short_description }}</p>
+                <div class="specs">
+                    <h3>Thông số kỹ thuật</h3>
+                    <ul>
+                        {% for key, value in product.specs.items %}
+                        <li><strong>{{ key }}:</strong> {{ value }}</li>
+                        {% empty %}
+                        <li>Chưa cập nhật</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                <form action="{% url 'cart_add' product.id %}" method="post" class="add-cart">
+                    {% csrf_token %}
+                    <input type="number" name="quantity" min="1" value="1" />
+                    <button class="btn primary" {% if product.stock == 0 %}disabled{% endif %}>
+                        {% if product.stock == 0 %}Hết hàng{% else %}Thêm vào giỏ{% endif %}
+                    </button>
+                </form>
+            </div>
+        </div>
+        <article class="card">
+            <h3>Mô tả sản phẩm</h3>
+            <p>{{ product.description|linebreaks }}</p>
+        </article>
+    </main>
+
+    {% include 'store/partials/footer.html' %}
+</body>
+    
+</html>
+
+

@@ -1,0 +1,75 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cửa hàng máy tính</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+<body>
+    {% include 'store/partials/navbar.html' %}
+
+    <main class="container">
+        <section class="filters card">
+            <form method="get" class="filters-form">
+                <input type="text" name="q" placeholder="Tìm kiếm sản phẩm..." value="{{ q }}" />
+                <select name="category">
+                    <option value="">Danh mục</option>
+                    {% for c in categories %}
+                    <option value="{{ c.slug }}" {% if category_slug == c.slug %}selected{% endif %}>{{ c.name }}</option>
+                    {% endfor %}
+                </select>
+                <select name="brand">
+                    <option value="">Hãng</option>
+                    {% for b in brands %}
+                    <option value="{{ b.slug }}" {% if brand_slug == b.slug %}selected{% endif %}>{{ b.name }}</option>
+                    {% endfor %}
+                </select>
+                <input type="number" step="0.01" name="min" placeholder="Giá từ" value="{{ price_min }}" />
+                <input type="number" step="0.01" name="max" placeholder="Giá đến" value="{{ price_max }}" />
+                <button type="submit" class="btn">Lọc</button>
+            </form>
+        </section>
+
+        <section class="grid">
+            {% for p in products %}
+            <article class="product card">
+                <a href="{% url 'product_detail' p.slug %}">
+                    {% if p.image %}
+                    <img src="{{ p.image.url }}" alt="{{ p.name }}" />
+                    {% else %}
+                    <img src="{% static 'img/placeholder.png' %}" alt="{{ p.name }}" />
+                    {% endif %}
+                    <h3>{{ p.name }}</h3>
+                </a>
+                <p class="muted">{{ p.brand.name }} • {{ p.category.name }}</p>
+                <p class="price">{{ p.price }} ₫</p>
+                <form action="{% url 'cart_add' p.id %}" method="post">
+                    {% csrf_token %}
+                    <button class="btn primary" {% if p.stock == 0 %}disabled{% endif %}>
+                        {% if p.stock == 0 %}Hết hàng{% else %}Thêm vào giỏ{% endif %}
+                    </button>
+                </form>
+            </article>
+            {% empty %}
+            <p>Không có sản phẩm phù hợp.</p>
+            {% endfor %}
+        </section>
+
+        <div class="pagination">
+            {% if products.has_previous %}
+            <a class="btn" href="?page={{ products.previous_page_number }}">«</a>
+            {% endif %}
+            <span>Trang {{ products.number }}/{{ products.paginator.num_pages }}</span>
+            {% if products.has_next %}
+            <a class="btn" href="?page={{ products.next_page_number }}">»</a>
+            {% endif %}
+        </div>
+    </main>
+
+    {% include 'store/partials/footer.html' %}
+</body>
+</html>
+
+

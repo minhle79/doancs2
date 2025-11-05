@@ -1,0 +1,61 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Giỏ hàng</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+<body>
+    {% include 'store/partials/navbar.html' %}
+
+    <main class="container">
+        <h1>Giỏ hàng</h1>
+        <div class="card">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Sản phẩm</th>
+                        <th>SL</th>
+                        <th>Đơn giá</th>
+                        <th>Thành tiền</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for item in cart %}
+                    <tr>
+                        <td><a href="{% url 'product_detail' item.product.slug %}">{{ item.product.name }}</a></td>
+                        <td>{{ item.quantity }}</td>
+                        <td>{{ item.price }} ₫</td>
+                        <td>{{ item.total }} ₫</td>
+                        <td>
+                            <form method="post" action="{% url 'cart_remove' item.product.id %}">
+                                {% csrf_token %}
+                                <button class="btn">Xóa</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr><td colspan="5">Giỏ hàng trống.</td></tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            <div class="cart-total">
+                <strong>Tổng:</strong> {{ cart.total_amount }} ₫
+            </div>
+            <div class="actions">
+                <a class="btn" href="{% url 'home' %}">Tiếp tục mua sắm</a>
+                {% if cart|length > 0 %}
+                <a class="btn primary" href="{% url 'checkout' %}">Thanh toán</a>
+                {% endif %}
+            </div>
+        </div>
+    </main>
+
+    {% include 'store/partials/footer.html' %}
+</body>
+</html>
+
+

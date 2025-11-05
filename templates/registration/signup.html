@@ -1,0 +1,27 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng ký</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+<body>
+    {% include 'store/partials/navbar.html' %}
+    <main class="container">
+        <div class="card auth-card">
+            <h1>Đăng ký</h1>
+            <form method="post">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button class="btn primary" type="submit">Tạo tài khoản</button>
+            </form>
+            <p>Đã có tài khoản? <a href="{% url 'login' %}">Đăng nhập</a></p>
+        </div>
+    </main>
+    {% include 'store/partials/footer.html' %}
+</body>
+</html>
+
+

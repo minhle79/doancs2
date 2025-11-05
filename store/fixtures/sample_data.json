@@ -1,0 +1,12 @@
+[
+  {"model": "store.category", "pk": 1, "fields": {"name": "Laptop", "slug": "laptop"}},
+  {"model": "store.category", "pk": 2, "fields": {"name": "PC", "slug": "pc"}},
+  {"model": "store.category", "pk": 3, "fields": {"name": "Linh kiện", "slug": "linh-kien"}},
+  {"model": "store.brand", "pk": 1, "fields": {"name": "Apple", "slug": "apple"}},
+  {"model": "store.brand", "pk": 2, "fields": {"name": "Dell", "slug": "dell"}},
+  {"model": "store.brand", "pk": 3, "fields": {"name": "Asus", "slug": "asus"}},
+  {"model": "store.product", "pk": 1, "fields": {"name": "MacBook Air M2 13", "slug": "macbook-air-m2-13", "category": 1, "brand": 1, "price": "28990000.00", "stock": 12, "short_description": "Mỏng nhẹ, chip Apple M2", "description": "MacBook Air M2 với thiết kế mỏng nhẹ, hiệu năng mạnh mẽ.", "specs": {"CPU": "Apple M2", "RAM": "8GB", "SSD": "256GB"}, "created_at": "2024-01-01T00:00:00Z"}},
+  {"model": "store.product", "pk": 2, "fields": {"name": "Dell XPS 13", "slug": "dell-xps-13", "category": 1, "brand": 2, "price": "32990000.00", "stock": 8, "short_description": "Màn hình InfinityEdge", "description": "Laptop cao cấp cho công việc và giải trí.", "specs": {"CPU": "Intel i7", "RAM": "16GB", "SSD": "512GB"}, "created_at": "2024-01-02T00:00:00Z"}},
+  {"model": "store.product", "pk": 3, "fields": {"name": "Asus ROG Strix G", "slug": "asus-rog-strix-g", "category": 1, "brand": 3, "price": "27990000.00", "stock": 5, "short_description": "Gaming mạnh mẽ", "description": "Laptop gaming hiệu năng cao.", "specs": {"CPU": "Ryzen 7", "RAM": "16GB", "SSD": "512GB", "GPU": "RTX 4060"}, "created_at": "2024-01-03T00:00:00Z"}}
+]
+
