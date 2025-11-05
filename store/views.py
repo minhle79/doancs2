@@ -4,6 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
 from django.db.models import Q
 from django.http import JsonResponse
+from django.template.loader import render_to_string
 from django.shortcuts import get_object_or_404, redirect, render
 
 from .cart import Cart
@@ -35,8 +36,14 @@ def home(request):
     page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
 
+    featured = Product.objects.filter(is_featured=True)[:8]
+    deals = Product.objects.filter(is_deal=True)[:8]
+    hot = Product.objects.filter(is_hot=True)[:8]
     ctx = {
         "products": page_obj,
+        "featured": featured,
+        "deals": deals,
+        "hot": hot,
         "categories": Category.objects.all(),
         "brands": Brand.objects.all(),
         "q": query,
@@ -48,6 +55,42 @@ def home(request):
     return render(request, "store/home.html", ctx)
 
 
+def products(request):
+    query = request.GET.get("q", "").strip()
+    category_slug = request.GET.get("category")
+    brand_slug = request.GET.get("brand")
+    sort = request.GET.get("sort")  # price_asc, price_desc, newest
+
+    products = Product.objects.all()
+    if query:
+        products = products.filter(Q(name__icontains=query) | Q(short_description__icontains=query))
+    if category_slug:
+        products = products.filter(category__slug=category_slug)
+    if brand_slug:
+        products = products.filter(brand__slug=brand_slug)
+    if sort == "price_asc":
+        products = products.order_by("price")
+    elif sort == "price_desc":
+        products = products.order_by("-price")
+    else:
+        products = products.order_by("-created_at")
+
+    paginator = Paginator(products, 12)
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
+
+    ctx = {
+        "products": page_obj,
+        "categories": Category.objects.all(),
+        "brands": Brand.objects.all(),
+        "q": query,
+        "category_slug": category_slug,
+        "brand_slug": brand_slug,
+        "sort": sort or "",
+    }
+    return render(request, "store/products.html", ctx)
+
+
 def product_detail(request, slug):
     product = get_object_or_404(Product, slug=slug)
     return render(request, "store/product_detail.html", {"product": product})
@@ -55,6 +98,8 @@ def product_detail(request, slug):
 
 def cart_detail(request):
     cart = Cart(request)
+    if request.GET.get("fragment") == "1":
+        return render(request, "store/partials/cart_modal.html", {"cart": cart})
     return render(request, "store/cart.html", {"cart": cart})
 
 
@@ -63,6 +108,15 @@ def cart_add(request, product_id):
     quantity = int(request.POST.get("quantity", 1))
     quantity = 1 if quantity < 1 else quantity
     cart.add(product_id, quantity=quantity)
+    # AJAX/Fetch request detection
+    if request.headers.get("x-requested-with") == "XMLHttpRequest" or "application/json" in request.headers.get("Accept", ""):
+        html = render_to_string("store/partials/cart_modal.html", {"cart": cart}, request=request)
+        return JsonResponse({
+            "ok": True,
+            "message": "Đã thêm sản phẩm vào giỏ hàng!",
+            "cart_count": len(cart),
+            "modal": html,
+        })
     messages.success(request, "Đã thêm vào giỏ hàng")
     return redirect("cart_detail")
 
@@ -70,6 +124,14 @@ def cart_add(request, product_id):
 def cart_remove(request, product_id):
     cart = Cart(request)
     cart.remove(product_id)
+    if request.headers.get("x-requested-with") == "XMLHttpRequest" or "application/json" in request.headers.get("Accept", ""):
+        html = render_to_string("store/partials/cart_modal.html", {"cart": cart}, request=request)
+        return JsonResponse({
+            "ok": True,
+            "message": "Đã xóa sản phẩm khỏi giỏ hàng!",
+            "cart_count": len(cart),
+            "modal": html,
+        })
     messages.info(request, "Đã xóa khỏi giỏ hàng")
     return redirect("cart_detail")
 
@@ -142,5 +204,16 @@ def api_products(request):
         category=models.F("category__name"),
     )
     return JsonResponse({"products": list(products)})
+
+
+def api_suggest(request):
+    q = request.GET.get("q", "").strip()
+    if not q:
+        return JsonResponse({"results": []})
+    items = (
+        Product.objects.filter(Q(name__icontains=q) | Q(short_description__icontains=q))
+        .values("id", "name", "slug")[:5]
+    )
+    return JsonResponse({"results": list(items)})
 
 

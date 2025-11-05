@@ -16,8 +16,8 @@ class BrandAdmin(admin.ModelAdmin):
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ("name", "brand", "category", "price", "stock")
-    list_filter = ("brand", "category")
+    list_display = ("name", "brand", "category", "price", "stock", "is_featured", "is_deal", "is_hot")
+    list_filter = ("brand", "category", "is_featured", "is_deal", "is_hot")
     search_fields = ("name",)
     prepopulated_fields = {"slug": ("name",)}
 

@@ -36,6 +36,9 @@ class Product(models.Model):
     short_description = models.CharField(max_length=300, blank=True)
     description = models.TextField(blank=True)
     specs = models.JSONField(default=dict, blank=True)
+    is_featured = models.BooleanField(default=False)
+    is_deal = models.BooleanField(default=False)
+    is_hot = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:

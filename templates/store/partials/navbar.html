@@ -1,11 +1,21 @@
 <header class="navbar">
   <div class="container nav-inner">
     <a href="/" class="logo">Computer<span>Store</span></a>
-    <form class="nav-search" method="get" action="/">
-      <input type="text" name="q" placeholder="Tìm kiếm..." value="{{ q|default:'' }}" />
-      <button class="btn">Tìm</button>
+    <form class="nav-search" method="get" action="{% url 'products' %}">
+      <input id="search-input" type="text" name="q" autocomplete="off" placeholder="Tìm kiếm sản phẩm..." value="{{ q|default:'' }}" />
+      <div id="search-suggest" class="suggest"></div>
     </form>
     <nav class="nav-links">
+      <a class="btn" href="/">Trang chủ</a>
+      <a class="btn" href="{% url 'products' %}">Sản phẩm</a>
+      <div class="nav-categories dropdown">
+        <a class="btn" href="{% url 'products' %}">Danh mục ▾</a>
+        <div class="dropdown-menu">
+          {% for c in nav_categories %}
+            <a href="{% url 'products' %}?category={{ c.slug }}">{{ c.name }}</a>
+          {% endfor %}
+        </div>
+      </div>
       {% if request.user.is_authenticated %}
         <span>Xin chào, {{ request.user.username }}</span>
         <form method="post" action="{% url 'logout' %}" style="display:inline">
@@ -16,9 +26,10 @@
         <a class="btn" href="{% url 'login' %}">Đăng nhập</a>
         <a class="btn" href="{% url 'signup' %}">Đăng ký</a>
       {% endif %}
-      <a class="btn primary" href="{% url 'cart_detail' %}">Giỏ hàng</a>
+      <button id="openCart" class="btn primary" type="button">🛒 <span class="badge">{{ cart_count|default:0 }}</span></button>
     </nav>
   </div>
+  <div id="cartModal" class="modal hidden"></div>
 </header>
 
 

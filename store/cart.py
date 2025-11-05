@@ -17,9 +17,8 @@ class Cart:
 
     def add(self, product_id: int, quantity: int = 1, override: bool = False):
         pid = str(product_id)
-        product = Product.objects.get(id=product_id)
         if pid not in self.cart:
-            self.cart[pid] = {"quantity": 0, "price": str(product.price)}
+            self.cart[pid] = {"quantity": 0}
         if override:
             self.cart[pid]["quantity"] = quantity
         else:
@@ -48,8 +47,9 @@ class Cart:
             item_data = {
                 "product": product,
                 "quantity": item["quantity"],
-                "price": Decimal(item["price"]),
-                "total": Decimal(item["price"]) * item["quantity"],
+                # always use current product price to reflect updates
+                "price": Decimal(product.price),
+                "total": Decimal(product.price) * item["quantity"],
             }
             yield item_data
 
@@ -57,6 +57,9 @@ class Cart:
         return sum(item["quantity"] for item in self.cart.values())
 
     def total_amount(self):
-        return sum(Decimal(item["price"]) * item["quantity"] for item in self.cart.values())
+        total = Decimal("0")
+        for item in self:
+            total += item["total"]
+        return total
 
 
