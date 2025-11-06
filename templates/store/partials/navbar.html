@@ -16,6 +16,8 @@
           {% endfor %}
         </div>
       </div>
+      <!-- moved cart button to the right of categories -->
+      <button id="openCart" class="btn primary" type="button">🛒 <span class="badge">{{ cart_count|default:0 }}</span></button>
       {% if request.user.is_authenticated %}
         <span>Xin chào, {{ request.user.username }}</span>
         <form method="post" action="{% url 'logout' %}" style="display:inline">
@@ -25,11 +27,11 @@
       {% else %}
         <a class="btn" href="{% url 'login' %}">Đăng nhập</a>
         <a class="btn" href="{% url 'signup' %}">Đăng ký</a>
-      {% endif %}
-      <button id="openCart" class="btn primary" type="button">🛒 <span class="badge">{{ cart_count|default:0 }}</span></button>
+  {% endif %}
     </nav>
   </div>
-  <div id="cartModal" class="modal hidden"></div>
 </header>
+<!-- Cart modal placed outside header so overlay covers the whole page -->
+<div id="cartModal" class="modal hidden"></div>
 
 

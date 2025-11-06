@@ -4,6 +4,58 @@ document.querySelectorAll('.dropdown').forEach(dd => {
   dd.addEventListener('mouseleave', () => dd.classList.remove('open'));
 });
 
+// Initialize carousels / slider-navs
+function initCarousels(){
+  // generic function to attach prev/next to a wrapper
+  function attachNav(wrapper, btnPrev, btnNext){
+    if (!wrapper) return;
+    const computeAmount = () => {
+      const first = wrapper.querySelector('.product') || wrapper.querySelector('img');
+      if (first) {
+        const style = window.getComputedStyle(first);
+        const w = first.offsetWidth;
+        // try to get gap from wrapper (fallback to 16)
+        const gap = parseInt(window.getComputedStyle(wrapper).gap) || 16;
+        return (w + gap) * 2; // scroll two items
+      }
+      return Math.round(wrapper.clientWidth * 0.8);
+    };
+
+    btnPrev && btnPrev.addEventListener('click', ()=>{
+      const amt = computeAmount();
+      wrapper.scrollBy({ left: -amt, behavior: 'smooth' });
+    });
+    btnNext && btnNext.addEventListener('click', ()=>{
+      const amt = computeAmount();
+      wrapper.scrollBy({ left: amt, behavior: 'smooth' });
+    });
+  }
+
+  // Banner carousel (class .carousel)
+  document.querySelectorAll('.carousel').forEach(section => {
+    const wrapper = section.querySelector('.slider-wrapper');
+    const btnPrev = section.querySelector('.carousel-btn.prev');
+    const btnNext = section.querySelector('.carousel-btn.next');
+    attachNav(wrapper, btnPrev, btnNext);
+  });
+
+  // Slider tracks (deals / hot)
+  document.querySelectorAll('section.banner').forEach(section => {
+    const wrapper = section.querySelector('.slider-wrapper');
+    if (!wrapper) return;
+    const btnPrev = section.querySelector('.slider-nav.prev');
+    const btnNext = section.querySelector('.slider-nav.next');
+    attachNav(wrapper, btnPrev, btnNext);
+  });
+}
+
+// run on DOM ready
+document.addEventListener('DOMContentLoaded', initCarousels);
+// If script loaded after DOMContentLoaded, run immediately
+if (document.readyState === 'interactive' || document.readyState === 'complete') {
+  initCarousels();
+}
+
 // Search suggestion
 const searchInput = document.getElementById('search-input');
 const suggestBox = document.getElementById('search-suggest');
@@ -39,12 +91,23 @@ async function openCart(){
   const res = await fetch('/cart/?fragment=1');
   cartModal.innerHTML = await res.text();
   cartModal.classList.remove('hidden');
+  
   const closeBtn = cartModal.querySelector('#closeCart');
   closeBtn && closeBtn.addEventListener('click', () => cartModal.classList.add('hidden'));
-  // close when clicking outside content
-  cartModal.addEventListener('click', (e)=>{
-    if (e.target === cartModal) cartModal.classList.add('hidden');
-  }, { once:true });
+
+  // Close when clicking outside modal content
+  const closeModalOutside = (e) => {
+    const modalContent = cartModal.querySelector('.modal-content');
+    if (!modalContent.contains(e.target) && e.target !== openCartBtn) {
+      cartModal.classList.add('hidden');
+      document.removeEventListener('click', closeModalOutside);
+    }
+  };
+  // Add click listener with a small delay to avoid immediate trigger
+  setTimeout(() => {
+    document.addEventListener('click', closeModalOutside);
+  }, 0);
+  
   // close with ESC
   const esc = (e)=>{ if(e.key==='Escape'){ cartModal.classList.add('hidden'); document.removeEventListener('keydown', esc);} };
   document.addEventListener('keydown', esc);
@@ -91,6 +154,10 @@ document.addEventListener('submit', async (e) => {
     if (data.ok){
       showToast(data.message, 'success');
       setCartCount(data.cart_count);
+      // Just update cart modal content without showing it
+      if (cartModal && data.modal) {
+        cartModal.innerHTML = data.modal;
+      }
     }
   }
   if (action.includes('/cart/remove/')) {

@@ -27,9 +27,13 @@
     {% endfor %}
   </div>
   <div class="modal-footer">
-    <div class="grow"></div>
-    <strong>Tổng:</strong> {{ cart.total_amount }} ₫
-    <a href="{% url 'checkout' %}" class="btn primary">Thanh toán</a>
+    <div class="cart-total-row">
+      <strong>Tổng:</strong>
+      <span class="cart-total-amount">{{ cart.total_amount }} ₫</span>
+    </div>
+    <div class="cart-actions-footer">
+      <a href="{% url 'checkout' %}" class="btn primary">Thanh toán</a>
+    </div>
   </div>
 </div>
 

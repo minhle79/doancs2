@@ -10,6 +10,19 @@
 <body>
   {% include 'store/partials/navbar.html' %}
   <main class="container">
+    <nav class="breadcrumb">
+      <a href="/">Trang chủ</a>
+      &nbsp;›&nbsp;
+      {% if category_slug %}
+        {% for c in categories %}
+          {% if c.slug == category_slug %}
+            <a href="{% url 'products' %}?category={{ c.slug }}">{{ c.name }}</a>
+          {% endif %}
+        {% endfor %}
+      {% else %}
+        <span>Sản phẩm</span>
+      {% endif %}
+    </nav>
     <section class="filters card">
       <form method="get" class="filters-form">
         <input type="text" name="q" placeholder="Tìm kiếm sản phẩm..." value="{{ q }}" />

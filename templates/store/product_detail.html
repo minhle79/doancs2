@@ -11,6 +11,13 @@
     {% include 'store/partials/navbar.html' %}
 
     <main class="container">
+        <nav class="breadcrumb">
+            <a href="/">Trang chủ</a>
+            &nbsp;›&nbsp;
+            <a href="{% url 'products' %}?category={{ product.category.slug }}">{{ product.category.name }}</a>
+            &nbsp;›&nbsp;
+            <span>{{ product.name }}</span>
+        </nav>
         <div class="product-detail card">
             <div class="media">
                 {% if product.image %}
@@ -50,8 +57,8 @@
     </main>
 
     {% include 'store/partials/footer.html' %}
+    <script src="{% static 'js/app.js' %}"></script>
 </body>
-    
 </html>
 
 

@@ -11,17 +11,20 @@
     {% include 'store/partials/navbar.html' %}
 
     <main class="container">
-        <section class="banner card">
-            <div class="banner-track">
+        <section class="banner card carousel">
+            <button class="carousel-btn prev" aria-label="Prev banner">‹</button>
+            <div class="banner-track slider-wrapper">
                 <img src="{% static 'img/placeholder.png' %}" alt="Banner 1">
                 <img src="{% static 'img/placeholder.png' %}" alt="Banner 2">
                 <img src="{% static 'img/placeholder.png' %}" alt="Banner 3">
             </div>
+            <button class="carousel-btn next" aria-label="Next banner">›</button>
         </section>
 
         <h2 class="section-title">Sản phẩm Ưu đãi</h2>
         <section class="banner card">
-            <div class="slider-track">
+            <button class="slider-nav prev">‹</button>
+            <div class="slider-track slider-wrapper">
                 {% for p in deals %}
                 <article class="product card">
                     <a href="{% url 'product_detail' p.slug %}">
@@ -36,11 +39,13 @@
                 </article>
                 {% endfor %}
             </div>
+            <button class="slider-nav next">›</button>
         </section>
 
         <h2 class="section-title">Sản phẩm Hot</h2>
         <section class="banner card">
-            <div class="slider-track">
+            <button class="slider-nav prev">‹</button>
+            <div class="slider-track slider-wrapper">
                 {% for p in hot %}
                 <article class="product card">
                     <a href="{% url 'product_detail' p.slug %}">
@@ -55,6 +60,7 @@
                 </article>
                 {% endfor %}
             </div>
+            <button class="slider-nav next">›</button>
         </section>
 
         <h2 class="section-title">Danh mục sản phẩm</h2>
