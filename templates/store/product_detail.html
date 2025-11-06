@@ -32,53 +32,59 @@
             </div>
 
             <div class="info">
-                <h1>{{ product.name }}</h1>
+                <h1 class="product-title">{{ product.name }}</h1>
                 
-                <p class="muted" style="font-size: 16px; margin: 8px 0;">
-                    🏷️ {{ product.brand.name }} • 📂 {{ product.category.name }}
-                </p>
-
-                <p class="price">{{ product.price|floatformat:0 }} ₫</p>
-
-                {% if product.stock > 0 %}
-                <div class="stock-info">
-                    ✅ Còn hàng ({{ product.stock }} sản phẩm)
-                </div>
-                {% else %}
-                <div class="stock-info" style="background: rgba(220, 38, 38, 0.1); border-color: rgba(220, 38, 38, 0.3); color: #fca5a5;">
-                    ❌ Hết hàng
-                </div>
-                {% endif %}
+                <p class="product-price">{{ product.price|floatformat:0 }} ₫</p>
 
                 {% if product.short_description %}
-                <p class="short-description">{{ product.short_description }}</p>
+                <p class="product-short-desc">{{ product.short_description }}</p>
                 {% endif %}
 
-                {% if product.specs %}
-                <div class="specs">
-                    <h3>⚡ Thông số kỹ thuật</h3>
-                    <ul>
-                        {% for key, value in product.specs.items %}
-                        <li>
-                            <strong>{{ key }}</strong>
-                            <span>{{ value }}</span>
-                        </li>
-                        {% endfor %}
-                    </ul>
+                <div class="product-meta">
+                    <p class="product-brand-cat">
+                        🏷️ {{ product.brand.name }} • 📂 {{ product.category.name }}
+                    </p>
+                    
+                    {% if product.stock > 0 %}
+                    <p class="stock-status in-stock">
+                        <strong>Tình trạng:</strong> <span>Còn hàng</span>
+                    </p>
+                    {% else %}
+                    <p class="stock-status out-stock">
+                        <strong>Tình trạng:</strong> <span>Hết hàng</span>
+                    </p>
+                    {% endif %}
                 </div>
-                {% endif %}
 
-                <form action="{% url 'cart_add' product.id %}" method="post" class="add-cart">
-                    {% csrf_token %}
-                    <input type="number" name="quantity" min="1" max="{{ product.stock }}" value="1" {% if product.stock == 0 %}disabled{% endif %} />
-                    <button class="btn primary" {% if product.stock == 0 %}disabled{% endif %} style="font-size: 16px;">
-                        {% if product.stock == 0 %}
-                            ❌ Hết hàng
-                        {% else %}
-                            🛒 Thêm vào giỏ hàng
-                        {% endif %}
-                    </button>
-                </form>
+                <div class="product-actions">
+                    <form action="{% url 'cart_add' product.id %}" method="post" class="add-cart-form">
+                        {% csrf_token %}
+                        <div class="quantity-control">
+                            <label for="quantity">Số lượng:</label>
+                            <div class="quantity-input-group">
+                                <button type="button" class="qty-btn qty-minus" onclick="decreaseQty()" {% if product.stock == 0 %}disabled{% endif %}>−</button>
+                                <input type="number" id="quantity" name="quantity" min="1" max="{{ product.stock }}" value="1" readonly {% if product.stock == 0 %}disabled{% endif %} />
+                                <button type="button" class="qty-btn qty-plus" onclick="increaseQty({{ product.stock }})" {% if product.stock == 0 %}disabled{% endif %}>+</button>
+                            </div>
+                        </div>
+                        <div class="action-buttons">
+                            <button type="submit" class="btn btn-add-cart" {% if product.stock == 0 %}disabled{% endif %}>
+                                {% if product.stock == 0 %}
+                                    ❌ Hết hàng
+                                {% else %}
+                                    🛒 Thêm vào giỏ
+                                {% endif %}
+                            </button>
+                            <button type="button" class="btn btn-buy-now" {% if product.stock == 0 %}disabled{% endif %} onclick="buyNow({{ product.id }}, {{ product.stock }})">
+                                {% if product.stock == 0 %}
+                                    ❌ Hết hàng
+                                {% else %}
+                                    ⚡ Mua ngay
+                                {% endif %}
+                            </button>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
 
@@ -91,12 +97,138 @@
             </div>
         </article>
         {% endif %}
+
+        <!-- Specs -->
+        {% if product.specs %}
+        <article class="card specs-section" style="margin-top: 32px;">
+            <h3 style="color: var(--primary); margin-bottom: 24px; font-size: 24px; text-align: center;">⚡ Thông số kỹ thuật</h3>
+            <table class="specs-table">
+                <tbody>
+                    {% for key, value in product.specs.items %}
+                    <tr>
+                        <td class="spec-label">{{ key }}</td>
+                        <td class="spec-value">{{ value }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </article>
+        {% endif %}
+
+        <!-- Related Products -->
+        {% if related_products %}
+        <section class="related-products-section" style="margin-top: 48px;">
+            <h2 class="section-title">🔗 Sản phẩm liên quan</h2>
+            <div class="related-products-slider">
+                <button class="slider-nav prev" onclick="scrollRelatedProducts(-1)" aria-label="Trước">‹</button>
+                <div class="related-products-track" id="relatedProductsTrack">
+                    {% for p in related_products %}
+                    <article class="product card related-product-card">
+                        <a href="{% url 'product_detail' p.slug %}">
+                            {% if p.image %}
+                            <img src="{{ p.image.url }}" alt="{{ p.name }}" loading="lazy" />
+                            {% else %}
+                            <img src="{% static 'img/placeholder.png' %}" alt="{{ p.name }}" loading="lazy" />
+                            {% endif %}
+                        </a>
+                        <div class="product-info-centered">
+                            <h3 class="product-name"><a href="{% url 'product_detail' p.slug %}">{{ p.name }}</a></h3>
+                            <p class="price">{{ p.price|floatformat:0 }} ₫</p>
+                            <form action="{% url 'cart_add' p.id %}" method="post" style="margin-top: 12px;">
+                                {% csrf_token %}
+                                <input type="hidden" name="quantity" value="1" />
+                                <button class="btn primary" style="width: 100%; font-size: 14px;" {% if p.stock == 0 %}disabled{% endif %}>
+                                    {% if p.stock == 0 %}
+                                        ❌ Hết hàng
+                                    {% else %}
+                                        🛒 Thêm vào giỏ
+                                    {% endif %}
+                                </button>
+                            </form>
+                        </div>
+                    </article>
+                    {% endfor %}
+                </div>
+                <button class="slider-nav next" onclick="scrollRelatedProducts(1)" aria-label="Tiếp">›</button>
+            </div>
+        </section>
+        {% endif %}
     </main>
 
     {% include 'store/partials/footer.html' %}
     
     <button id="backToTop" class="back-to-top" aria-label="Lên đầu trang">↑</button>
+    
     <script src="{% static 'js/app.js' %}"></script>
+    <script>
+        // Quantity control functions
+        function decreaseQty() {
+            const input = document.getElementById('quantity');
+            const currentValue = parseInt(input.value) || 1;
+            if (currentValue > 1) {
+                input.value = currentValue - 1;
+            }
+        }
+        
+        function increaseQty(maxStock) {
+            const input = document.getElementById('quantity');
+            const currentValue = parseInt(input.value) || 1;
+            if (currentValue < maxStock) {
+                input.value = currentValue + 1;
+            }
+        }
+        
+        // Related products slider
+        function scrollRelatedProducts(direction) {
+            const track = document.getElementById('relatedProductsTrack');
+            const cardWidth = track.querySelector('.related-product-card').offsetWidth;
+            const gap = 24; // gap between cards
+            const scrollAmount = (cardWidth + gap) * direction;
+            
+            track.scrollBy({
+                left: scrollAmount,
+                behavior: 'smooth'
+            });
+        }
+        
+        function buyNow(productId, maxStock) {
+            const quantityInput = document.getElementById('quantity');
+            const quantity = parseInt(quantityInput.value) || 1;
+            
+            if (quantity > maxStock) {
+                alert('Số lượng vượt quá tồn kho!');
+                return;
+            }
+            
+            // Tạo form ẩn để thêm vào giỏ hàng
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = `/cart/add/${productId}/`;
+            
+            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+            const csrfInput = document.createElement('input');
+            csrfInput.type = 'hidden';
+            csrfInput.name = 'csrfmiddlewaretoken';
+            csrfInput.value = csrfToken;
+            
+            const quantityHidden = document.createElement('input');
+            quantityHidden.type = 'hidden';
+            quantityHidden.name = 'quantity';
+            quantityHidden.value = quantity;
+            
+            const redirectInput = document.createElement('input');
+            redirectInput.type = 'hidden';
+            redirectInput.name = 'buy_now';
+            redirectInput.value = '1';
+            
+            form.appendChild(csrfInput);
+            form.appendChild(quantityHidden);
+            form.appendChild(redirectInput);
+            
+            document.body.appendChild(form);
+            form.submit();
+        }
+    </script>
 </body>
 </html>
 

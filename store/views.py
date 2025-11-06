@@ -94,7 +94,15 @@ def products(request):
 
 def product_detail(request, slug):
     product = get_object_or_404(Product, slug=slug)
-    return render(request, "store/product_detail.html", {"product": product})
+    # Lấy sản phẩm liên quan cùng danh mục, loại trừ sản phẩm hiện tại
+    related_products = Product.objects.filter(
+        category=product.category
+    ).exclude(id=product.id)[:8]
+    
+    return render(request, "store/product_detail.html", {
+        "product": product,
+        "related_products": related_products
+    })
 
 
 def cart_detail(request):
@@ -109,6 +117,7 @@ def cart_add(request, product_id):
     product = get_object_or_404(Product, id=product_id)
     quantity = int(request.POST.get("quantity", 1))
     quantity = 1 if quantity < 1 else quantity
+    buy_now = request.POST.get("buy_now", "0") == "1"
     
     # Check stock availability
     current_cart_quantity = cart.cart.get(str(product_id), {}).get("quantity", 0)
@@ -126,6 +135,12 @@ def cart_add(request, product_id):
         return redirect("product_detail", slug=product.slug)
     
     cart.add(product_id, quantity=quantity)
+    
+    # Nếu là "Mua ngay", chuyển thẳng đến trang thanh toán
+    if buy_now:
+        messages.success(request, "Đã thêm vào giỏ hàng. Tiến hành thanh toán.")
+        return redirect("checkout")
+    
     # AJAX/Fetch request detection
     if request.headers.get("x-requested-with") == "XMLHttpRequest" or "application/json" in request.headers.get("Accept", ""):
         html = render_to_string("store/partials/cart_modal.html", {"cart": cart}, request=request)

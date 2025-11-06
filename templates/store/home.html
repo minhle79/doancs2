@@ -15,14 +15,45 @@
 
     <main class="container">
         <!-- Hero Banner -->
-        <section class="banner card carousel">
-            <button class="carousel-btn prev" aria-label="Prev banner">‹</button>
-            <div class="banner-track slider-wrapper">
-                <img src="{% static 'img/placeholder.png' %}" alt="Khuyến mãi đặc biệt">
-                <img src="{% static 'img/placeholder.png' %}" alt="Sản phẩm mới nhất">
-                <img src="{% static 'img/placeholder.png' %}" alt="Giá tốt nhất">
+        <section class="hero-banner">
+            <div class="hero-content">
+                <div class="hero-text">
+                    <h1 class="hero-title">
+                        <span class="gradient-text">Máy Tính Chính Hãng</span>
+                        <span class="hero-subtitle">Giá Tốt Nhất Thị Trường</span>
+                    </h1>
+                    <p class="hero-description">
+                        ⚡ Sản phẩm chất lượng cao • 🎁 Khuyến mãi hấp dẫn • 🚚 Giao hàng toàn quốc
+                    </p>
+                    <div class="hero-actions">
+                        <a href="{% url 'products' %}" class="btn-hero primary">
+                            🛒 Mua sắm ngay
+                        </a>
+                        <a href="{% url 'products' %}?sort=newest" class="btn-hero secondary">
+                            ✨ Sản phẩm mới
+                        </a>
+                    </div>
+                </div>
+                <div class="hero-image">
+                    <div class="floating-card card-1">
+                        <div class="card-icon">💻</div>
+                        <div class="card-text">Laptop Gaming</div>
+                    </div>
+                    <div class="floating-card card-2">
+                        <div class="card-icon">🖥️</div>
+                        <div class="card-text">PC Workstation</div>
+                    </div>
+                    <div class="floating-card card-3">
+                        <div class="card-icon">⚡</div>
+                        <div class="card-text">Linh kiện</div>
+                    </div>
+                </div>
             </div>
-            <button class="carousel-btn next" aria-label="Next banner">›</button>
+            <div class="hero-bg-shapes">
+                <div class="shape shape-1"></div>
+                <div class="shape shape-2"></div>
+                <div class="shape shape-3"></div>
+            </div>
         </section>
 
         <!-- Featured Products -->
