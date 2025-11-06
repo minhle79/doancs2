@@ -2,7 +2,8 @@ from django.contrib import messages
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
-from django.db.models import Q
+from django.db import transaction
+from django.db.models import F, Q
 from django.http import JsonResponse
 from django.template.loader import render_to_string
 from django.shortcuts import get_object_or_404, redirect, render
@@ -105,8 +106,25 @@ def cart_detail(request):
 
 def cart_add(request, product_id):
     cart = Cart(request)
+    product = get_object_or_404(Product, id=product_id)
     quantity = int(request.POST.get("quantity", 1))
     quantity = 1 if quantity < 1 else quantity
+    
+    # Check stock availability
+    current_cart_quantity = cart.cart.get(str(product_id), {}).get("quantity", 0)
+    total_quantity = current_cart_quantity + quantity
+    
+    if total_quantity > product.stock:
+        error_message = f"Chỉ còn {product.stock} sản phẩm trong kho"
+        if request.headers.get("x-requested-with") == "XMLHttpRequest" or "application/json" in request.headers.get("Accept", ""):
+            return JsonResponse({
+                "ok": False,
+                "message": error_message,
+                "cart_count": len(cart),
+            })
+        messages.error(request, error_message)
+        return redirect("product_detail", slug=product.slug)
+    
     cart.add(product_id, quantity=quantity)
     # AJAX/Fetch request detection
     if request.headers.get("x-requested-with") == "XMLHttpRequest" or "application/json" in request.headers.get("Accept", ""):
@@ -146,25 +164,45 @@ def checkout(request):
     if request.method == "POST":
         form = CheckoutForm(request.POST)
         if form.is_valid():
-            order: Order = form.save(commit=False)
-            order.user = request.user
-            order.total_amount = cart.total_amount()
-            order.save()
+            # Check stock availability before processing order
+            insufficient_stock = []
             for item in cart:
-                OrderItem.objects.create(
-                    order=order,
-                    product=item["product"],
-                    quantity=item["quantity"],
-                    price=item["price"],
-                )
-                # reduce stock
-                p = item["product"]
-                if p.stock >= item["quantity"]:
-                    p.stock -= item["quantity"]
-                    p.save(update_fields=["stock"])
-            cart.clear()
-            messages.success(request, "Đặt hàng thành công!")
-            return redirect("home")
+                product = item["product"]
+                if product.stock < item["quantity"]:
+                    insufficient_stock.append(f"{product.name} (còn {product.stock})")
+            
+            if insufficient_stock:
+                messages.error(request, f"Không đủ hàng: {', '.join(insufficient_stock)}")
+                return render(request, "store/checkout.html", {"form": form, "cart": cart})
+            
+            # Use transaction to ensure atomicity
+            try:
+                with transaction.atomic():
+                    # Create order
+                    order: Order = form.save(commit=False)
+                    order.user = request.user
+                    order.total_amount = cart.total_amount()
+                    order.save()
+                    
+                    # Create order items and reduce stock
+                    for item in cart:
+                        OrderItem.objects.create(
+                            order=order,
+                            product=item["product"],
+                            quantity=item["quantity"],
+                            price=item["price"],
+                        )
+                        # reduce stock
+                        p = item["product"]
+                        p.stock -= item["quantity"]
+                        p.save(update_fields=["stock"])
+                    
+                    cart.clear()
+                    messages.success(request, "Đặt hàng thành công!")
+                    return redirect("home")
+            except Exception as e:
+                messages.error(request, f"Có lỗi xảy ra khi đặt hàng: {str(e)}")
+                return render(request, "store/checkout.html", {"form": form, "cart": cart})
     else:
         initial = {}
         if request.user.is_authenticated:
@@ -200,8 +238,8 @@ def api_products(request):
         "price",
         "stock",
         "short_description",
-        brand=models.F("brand__name"),
-        category=models.F("category__name"),
+        brand=F("brand__name"),
+        category=F("category__name"),
     )
     return JsonResponse({"products": list(products)})
 

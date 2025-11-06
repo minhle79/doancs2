@@ -5,34 +5,41 @@ Website bán máy tính đơn giản với Django + SQLite.
 ## Tính năng
 - Danh sách sản phẩm, tìm kiếm, lọc theo danh mục/hãng/giá
 - Chi tiết sản phẩm (ảnh, thông số, mô tả, giá, tồn kho)
-- Giỏ hàng (session) thêm/xóa/sửa số lượng cơ bản
+- Giỏ hàng (session) thêm/xóa/sửa số lượng với kiểm tra tồn kho
 - Thanh toán đơn giản, tạo đơn hàng và giảm tồn kho
 - Đăng ký / đăng nhập người dùng (Django Auth)
 - Trang quản trị (Django Admin) thêm/sửa/xóa sản phẩm
-- API JSON: `/api/products/`
+- API JSON: `/api/products/`, `/api/suggest/`
+- Kiểm tra tồn kho khi thêm vào giỏ và đặt hàng
 
 ## Cài đặt và chạy
 
 1) Tạo môi trường ảo và cài phụ thuộc
 ```bash
 python -m venv .venv
-.\\.venv\\Scripts\\activate
+.\.venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-2) Tạo migrations cho app và migrate, sau đó tạo tài khoản admin
+2) (Tuỳ chọn) Cấu hình biến môi trường
+```bash
+# Copy file .env.example thành .env và chỉnh sửa theo nhu cầu
+copy .env.example .env
+```
+
+3) Tạo migrations cho app và migrate, sau đó tạo tài khoản admin
 ```bash
 python manage.py makemigrations store
 python manage.py migrate
 python manage.py createsuperuser
 ```
 
-3) Nạp dữ liệu mẫu (tuỳ chọn)
+4) Nạp dữ liệu mẫu (tuỳ chọn)
 ```bash
 python manage.py loaddata store/fixtures/sample_data.json
 ```
 
-4) Chạy server
+5) Chạy server
 ```bash
 python manage.py runserver
 ```

@@ -4,83 +4,109 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Sản phẩm</title>
+  <title>Sản phẩm - ComputerStore</title>
   <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
   {% include 'store/partials/navbar.html' %}
+  
   <main class="container">
+    <!-- Breadcrumb -->
     <nav class="breadcrumb">
-      <a href="/">Trang chủ</a>
+      <a href="/">🏠 Trang chủ</a>
       &nbsp;›&nbsp;
       {% if category_slug %}
         {% for c in categories %}
           {% if c.slug == category_slug %}
-            <a href="{% url 'products' %}?category={{ c.slug }}">{{ c.name }}</a>
+            <span>{{ c.name }}</span>
           {% endif %}
         {% endfor %}
       {% else %}
-        <span>Sản phẩm</span>
+        <span>📦 Tất cả sản phẩm</span>
       {% endif %}
     </nav>
+
+    <!-- Filters -->
     <section class="filters card">
       <form method="get" class="filters-form">
-        <input type="text" name="q" placeholder="Tìm kiếm sản phẩm..." value="{{ q }}" />
+        <input type="text" name="q" placeholder="🔍 Tìm kiếm sản phẩm..." value="{{ q }}" />
         <select name="category">
-          <option value="">Tất cả danh mục</option>
+          <option value="">📂 Tất cả danh mục</option>
           {% for c in categories %}
             <option value="{{ c.slug }}" {% if category_slug == c.slug %}selected{% endif %}>{{ c.name }}</option>
           {% endfor %}
         </select>
         <select name="brand">
-          <option value="">Tất cả thương hiệu</option>
+          <option value="">🏷️ Tất cả thương hiệu</option>
           {% for b in brands %}
             <option value="{{ b.slug }}" {% if brand_slug == b.slug %}selected{% endif %}>{{ b.name }}</option>
           {% endfor %}
         </select>
         <select name="sort">
-          <option value="">Mặc định</option>
-          <option value="price_asc" {% if sort == 'price_asc' %}selected{% endif %}>Giá tăng dần</option>
-          <option value="price_desc" {% if sort == 'price_desc' %}selected{% endif %}>Giá giảm dần</option>
+          <option value="">📊 Sắp xếp</option>
+          <option value="price_asc" {% if sort == 'price_asc' %}selected{% endif %}>💰 Giá tăng dần</option>
+          <option value="price_desc" {% if sort == 'price_desc' %}selected{% endif %}>💸 Giá giảm dần</option>
+          <option value="newest" {% if sort == 'newest' %}selected{% endif %}>✨ Mới nhất</option>
         </select>
-        <button type="submit" class="btn">Lọc</button>
+        <button type="submit" class="btn primary">Áp dụng</button>
       </form>
     </section>
 
+    <!-- Products Grid -->
     <section class="grid">
       {% for p in products %}
       <article class="product card">
         <a href="{% url 'product_detail' p.slug %}">
           {% if p.image %}
-            <img src="{{ p.image.url }}" alt="{{ p.name }}" />
+            <img src="{{ p.image.url }}" alt="{{ p.name }}" loading="lazy" />
           {% else %}
-            <img src="{% static 'img/placeholder.png' %}" alt="{{ p.name }}" />
+            <img src="{% static 'img/placeholder.png' %}" alt="{{ p.name }}" loading="lazy" />
           {% endif %}
           <h3>{{ p.name }}</h3>
         </a>
-        <p class="muted">{{ p.brand.name }} • {{ p.category.name }}</p>
-        <p class="price">{{ p.price }} ₫</p>
-        <form action="{% url 'cart_add' p.id %}" method="post">
-          {% csrf_token %}
-          <button class="btn primary" {% if p.stock == 0 %}disabled{% endif %}>Thêm vào giỏ</button>
-        </form>
+        <div style="padding: 0 20px 20px;">
+          <p class="muted" style="margin-bottom: 8px;">{{ p.brand.name }} • {{ p.category.name }}</p>
+          <p class="price" style="margin-bottom: 12px;">{{ p.price|floatformat:0 }} ₫</p>
+          <form action="{% url 'cart_add' p.id %}" method="post">
+            {% csrf_token %}
+            {% if p.stock > 0 %}
+              <button class="btn primary" style="width: 100%;">🛒 Thêm vào giỏ</button>
+            {% else %}
+              <button class="btn" disabled style="width: 100%; opacity: 0.5;">Hết hàng</button>
+            {% endif %}
+          </form>
+        </div>
       </article>
       {% empty %}
-      <p>Không có sản phẩm</p>
+      <div class="card" style="grid-column: 1 / -1; text-align: center; padding: 48px;">
+        <p style="font-size: 18px; color: var(--muted);">😔 Không tìm thấy sản phẩm nào</p>
+      </div>
       {% endfor %}
     </section>
 
+    <!-- Pagination -->
+    {% if products.paginator.num_pages > 1 %}
     <div class="pagination">
       {% if products.has_previous %}
-        <a class="btn" href="?page={{ products.previous_page_number }}">«</a>
+        <a class="btn" href="?page=1{% if q %}&q={{ q }}{% endif %}{% if category_slug %}&category={{ category_slug }}{% endif %}{% if brand_slug %}&brand={{ brand_slug }}{% endif %}{% if sort %}&sort={{ sort }}{% endif %}">««</a>
+        <a class="btn" href="?page={{ products.previous_page_number }}{% if q %}&q={{ q }}{% endif %}{% if category_slug %}&category={{ category_slug }}{% endif %}{% if brand_slug %}&brand={{ brand_slug }}{% endif %}{% if sort %}&sort={{ sort }}{% endif %}">‹</a>
       {% endif %}
-      <span>Trang {{ products.number }}/{{ products.paginator.num_pages }}</span>
+      
+      <span class="btn active">{{ products.number }}</span>
+      
       {% if products.has_next %}
-        <a class="btn" href="?page={{ products.next_page_number }}">»</a>
+        <a class="btn" href="?page={{ products.next_page_number }}{% if q %}&q={{ q }}{% endif %}{% if category_slug %}&category={{ category_slug }}{% endif %}{% if brand_slug %}&brand={{ brand_slug }}{% endif %}{% if sort %}&sort={{ sort }}{% endif %}">›</a>
+        <a class="btn" href="?page={{ products.paginator.num_pages }}{% if q %}&q={{ q }}{% endif %}{% if category_slug %}&category={{ category_slug }}{% endif %}{% if brand_slug %}&brand={{ brand_slug }}{% endif %}{% if sort %}&sort={{ sort }}{% endif %}">»»</a>
       {% endif %}
+      
+      <span style="margin-left: 12px; color: var(--muted);">Trang {{ products.number }}/{{ products.paginator.num_pages }}</span>
     </div>
+    {% endif %}
   </main>
+
   {% include 'store/partials/footer.html' %}
+  
   <button id="backToTop" class="back-to-top" aria-label="Lên đầu trang">↑</button>
   <script src="{% static 'js/app.js' %}"></script>
 </body>

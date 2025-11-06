@@ -4,57 +4,93 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Giỏ hàng</title>
+    <title>Giỏ hàng - ComputerStore</title>
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
     {% include 'store/partials/navbar.html' %}
 
     <main class="container">
-        <h1>Giỏ hàng</h1>
+        <h1 style="margin: 24px 0; font-size: 32px; background: var(--gradient-primary); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;">
+            🛒 Giỏ hàng của bạn
+        </h1>
+        
         <div class="card">
+            {% if cart %}
             <table class="table">
                 <thead>
                     <tr>
                         <th>Sản phẩm</th>
-                        <th>SL</th>
-                        <th>Đơn giá</th>
-                        <th>Thành tiền</th>
-                        <th></th>
+                        <th style="text-align: center;">Số lượng</th>
+                        <th style="text-align: right;">Đơn giá</th>
+                        <th style="text-align: right;">Thành tiền</th>
+                        <th style="text-align: center;"></th>
                     </tr>
                 </thead>
                 <tbody>
                 {% for item in cart %}
                     <tr>
-                        <td><a href="{% url 'product_detail' item.product.slug %}">{{ item.product.name }}</a></td>
-                        <td>{{ item.quantity }}</td>
-                        <td>{{ item.price }} ₫</td>
-                        <td>{{ item.total }} ₫</td>
                         <td>
-                            <form method="post" action="{% url 'cart_remove' item.product.id %}">
+                            <a href="{% url 'product_detail' item.product.slug %}" style="font-weight: 600;">
+                                {{ item.product.name }}
+                            </a>
+                        </td>
+                        <td style="text-align: center;">
+                            <span style="background: rgba(99, 102, 241, 0.1); padding: 4px 12px; border-radius: 999px; font-weight: 600;">
+                                {{ item.quantity }}
+                            </span>
+                        </td>
+                        <td style="text-align: right; color: var(--success);">
+                            {{ item.price|floatformat:0 }} ₫
+                        </td>
+                        <td style="text-align: right; font-weight: 700; color: var(--success);">
+                            {{ item.total|floatformat:0 }} ₫
+                        </td>
+                        <td style="text-align: center;">
+                            <form method="post" action="{% url 'cart_remove' item.product.id %}" style="display: inline;">
                                 {% csrf_token %}
-                                <button class="btn">Xóa</button>
+                                <button class="btn danger" style="padding: 8px 16px;">🗑️ Xóa</button>
                             </form>
                         </td>
                     </tr>
-                {% empty %}
-                    <tr><td colspan="5">Giỏ hàng trống.</td></tr>
                 {% endfor %}
                 </tbody>
             </table>
-            <div class="cart-total">
-                <strong>Tổng:</strong> {{ cart.total_amount }} ₫
+            
+            <div style="border-top: 2px solid var(--border); margin-top: 20px; padding-top: 20px;">
+                <div class="cart-total" style="margin-bottom: 20px;">
+                    <span style="font-size: 24px;">💰 Tổng cộng:</span>
+                    <span style="font-size: 28px; color: var(--success); margin-left: 16px;">
+                        {{ cart.total_amount|floatformat:0 }} ₫
+                    </span>
+                </div>
+                
+                <div class="actions">
+                    <a class="btn" href="{% url 'products' %}" style="padding: 14px 24px;">
+                        ← Tiếp tục mua sắm
+                    </a>
+                    <a class="btn primary" href="{% url 'checkout' %}" style="padding: 14px 32px; font-size: 16px;">
+                        ✅ Thanh toán ngay
+                    </a>
+                </div>
             </div>
-            <div class="actions">
-                <a class="btn" href="{% url 'home' %}">Tiếp tục mua sắm</a>
-                {% if cart|length > 0 %}
-                <a class="btn primary" href="{% url 'checkout' %}">Thanh toán</a>
-                {% endif %}
+            {% else %}
+            <div style="text-align: center; padding: 64px 20px;">
+                <p style="font-size: 48px; margin-bottom: 16px;">🛒</p>
+                <h3 style="color: var(--muted); margin-bottom: 24px;">Giỏ hàng trống</h3>
+                <a class="btn primary" href="{% url 'products' %}" style="padding: 14px 32px;">
+                    🛍️ Khám phá sản phẩm
+                </a>
             </div>
+            {% endif %}
         </div>
     </main>
 
     {% include 'store/partials/footer.html' %}
+    
+    <button id="backToTop" class="back-to-top" aria-label="Lên đầu trang">↑</button>
+    <script src="{% static 'js/app.js' %}"></script>
 </body>
 </html>
 

@@ -4,22 +4,61 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Đăng ký</title>
+    <title>Đăng ký - ComputerStore</title>
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
     {% include 'store/partials/navbar.html' %}
+    
     <main class="container">
         <div class="card auth-card">
-            <h1>Đăng ký</h1>
+            <h2 style="text-align: center; margin-bottom: 32px;">✨ Đăng ký tài khoản</h2>
+            
+            {% if messages %}
+            <div class="messages" style="margin-bottom: 24px;">
+                {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
             <form method="post">
                 {% csrf_token %}
-                {{ form.as_p }}
-                <button class="btn primary" type="submit">Tạo tài khoản</button>
+                {% for field in form %}
+                <div class="form-group">
+                    <label for="{{ field.id_for_label }}">
+                        {{ field.label }}
+                        {% if field.field.required %}<span style="color: #fca5a5;">*</span>{% endif %}
+                    </label>
+                    {{ field }}
+                    {% if field.errors %}
+                        <ul class="errorlist">
+                        {% for error in field.errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                        </ul>
+                    {% endif %}
+                    {% if field.help_text %}
+                        <p class="helptext">{{ field.help_text }}</p>
+                    {% endif %}
+                </div>
+                {% endfor %}
+                
+                <button class="btn success" type="submit" style="width: 100%; padding: 14px; font-size: 16px; margin-top: 8px;">
+                    🚀 Tạo tài khoản
+                </button>
             </form>
-            <p>Đã có tài khoản? <a href="{% url 'login' %}">Đăng nhập</a></p>
+            
+            <p style="text-align: center; margin-top: 24px; color: var(--muted);">
+                Đã có tài khoản? 
+                <a href="{% url 'login' %}" style="color: var(--primary); font-weight: 600;">Đăng nhập ngay</a>
+            </p>
         </div>
     </main>
+    
     {% include 'store/partials/footer.html' %}
 </body>
 </html>

@@ -1,39 +1,55 @@
+{% load static %}
 <div class="modal-content">
   <div class="modal-header">
-    <h3>Giỏ hàng</h3>
-    <button id="closeCart" class="btn">×</button>
+    <h3>🛒 Giỏ hàng của bạn</h3>
+    <button id="closeCart" class="btn" style="font-size: 24px; padding: 4px 12px;">×</button>
   </div>
+  
   <div class="modal-body">
-    {% for item in cart %}
-    <div class="cart-row">
-      <div class="cart-thumb">
-        {% if item.product.image %}
-        <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}">
-        {% endif %}
+    {% if cart %}
+      {% for item in cart %}
+      <div class="cart-row">
+        <div class="cart-thumb">
+          {% if item.product.image %}
+          <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}">
+          {% else %}
+          <img src="{% static 'img/placeholder.png' %}" alt="{{ item.product.name }}">
+          {% endif %}
+        </div>
+        <div class="cart-info">
+          <h4>
+            <a href="{% url 'product_detail' item.product.slug %}">{{ item.product.name }}</a>
+          </h4>
+          <p class="price">{{ item.price|floatformat:0 }} ₫</p>
+          <p class="quantity">Số lượng: {{ item.quantity }}</p>
+        </div>
+        <div class="cart-actions">
+          <form method="post" action="{% url 'cart_remove' item.product.id %}">
+            {% csrf_token %}
+            <button class="btn danger" type="submit" title="Xóa khỏi giỏ hàng">🗑️</button>
+          </form>
+        </div>
       </div>
-      <div class="cart-info">
-        <a href="{% url 'product_detail' item.product.slug %}">{{ item.product.name }}</a>
-        <div>{{ item.price }} ₫ × {{ item.quantity }}</div>
+      {% endfor %}
+    {% else %}
+      <div style="text-align: center; padding: 40px 20px;">
+        <p style="font-size: 48px; margin-bottom: 12px;">🛒</p>
+        <p style="color: var(--muted);">Giỏ hàng trống</p>
       </div>
-      <div class="cart-actions">
-        <form method="post" action="{% url 'cart_remove' item.product.id %}">
-          {% csrf_token %}
-          <button class="btn danger" type="submit">🗑</button>
-        </form>
-      </div>
-    </div>
-    {% empty %}
-    <p>Giỏ hàng trống.</p>
-    {% endfor %}
+    {% endif %}
   </div>
+  
+  {% if cart %}
   <div class="modal-footer">
     <div class="cart-total-row">
-      <strong>Tổng:</strong>
-      <span class="cart-total-amount">{{ cart.total_amount }} ₫</span>
+      <span>💰 Tổng cộng:</span>
+      <span style="margin-left: 16px;">{{ cart.total_amount|floatformat:0 }} ₫</span>
     </div>
     <div class="cart-actions-footer">
-      <a href="{% url 'checkout' %}" class="btn primary">Thanh toán</a>
+      <a href="{% url 'cart_detail' %}" class="btn" style="margin-right: 8px;">Xem giỏ hàng</a>
+      <a href="{% url 'checkout' %}" class="btn primary">✅ Thanh toán</a>
     </div>
   </div>
+  {% endif %}
 </div>
 

@@ -4,22 +4,55 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Đăng nhập</title>
+    <title>Đăng nhập - ComputerStore</title>
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
     {% include 'store/partials/navbar.html' %}
+    
     <main class="container">
         <div class="card auth-card">
-            <h1>Đăng nhập</h1>
+            <h2 style="text-align: center; margin-bottom: 32px;">🔐 Đăng nhập</h2>
+            
+            {% if messages %}
+            <div class="messages" style="margin-bottom: 24px;">
+                {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
             <form method="post">
                 {% csrf_token %}
-                {{ form.as_p }}
-                <button class="btn primary" type="submit">Đăng nhập</button>
+                {% for field in form %}
+                <div class="form-group">
+                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.errors %}
+                        <ul class="errorlist">
+                        {% for error in field.errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                        </ul>
+                    {% endif %}
+                </div>
+                {% endfor %}
+                
+                <button class="btn primary" type="submit" style="width: 100%; padding: 14px; font-size: 16px; margin-top: 8px;">
+                    ✅ Đăng nhập
+                </button>
             </form>
-            <p>Chưa có tài khoản? <a href="{% url 'signup' %}">Đăng ký</a></p>
+            
+            <p style="text-align: center; margin-top: 24px; color: var(--muted);">
+                Chưa có tài khoản? 
+                <a href="{% url 'signup' %}" style="color: var(--primary); font-weight: 600;">Đăng ký ngay</a>
+            </p>
         </div>
     </main>
+    
     {% include 'store/partials/footer.html' %}
 </body>
 </html>

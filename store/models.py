@@ -75,6 +75,13 @@ class OrderItem(models.Model):
     quantity = models.PositiveIntegerField()
     price = models.DecimalField(max_digits=12, decimal_places=2)
 
+    class Meta:
+        verbose_name = "Chi tiết đơn hàng"
+        verbose_name_plural = "Chi tiết đơn hàng"
+
+    def __str__(self) -> str:
+        return f"{self.product.name} x {self.quantity}"
+
     def line_total(self):
         return self.quantity * self.price
 

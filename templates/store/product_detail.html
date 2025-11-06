@@ -4,21 +4,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ product.name }} - Cửa hàng</title>
+    <title>{{ product.name }} - ComputerStore</title>
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
     {% include 'store/partials/navbar.html' %}
 
     <main class="container">
+        <!-- Breadcrumb -->
         <nav class="breadcrumb">
-            <a href="/">Trang chủ</a>
+            <a href="/">🏠 Trang chủ</a>
             &nbsp;›&nbsp;
             <a href="{% url 'products' %}?category={{ product.category.slug }}">{{ product.category.name }}</a>
             &nbsp;›&nbsp;
             <span>{{ product.name }}</span>
         </nav>
-        <div class="product-detail card">
+
+        <!-- Product Detail -->
+        <div class="product-detail">
             <div class="media">
                 {% if product.image %}
                 <img src="{{ product.image.url }}" alt="{{ product.name }}" />
@@ -26,37 +30,72 @@
                 <img src="{% static 'img/placeholder.png' %}" alt="{{ product.name }}" />
                 {% endif %}
             </div>
+
             <div class="info">
                 <h1>{{ product.name }}</h1>
-                <p class="muted">{{ product.brand.name }} • {{ product.category.name }}</p>
-                <p class="price">{{ product.price }} ₫</p>
-                <p>{{ product.short_description }}</p>
+                
+                <p class="muted" style="font-size: 16px; margin: 8px 0;">
+                    🏷️ {{ product.brand.name }} • 📂 {{ product.category.name }}
+                </p>
+
+                <p class="price">{{ product.price|floatformat:0 }} ₫</p>
+
+                {% if product.stock > 0 %}
+                <div class="stock-info">
+                    ✅ Còn hàng ({{ product.stock }} sản phẩm)
+                </div>
+                {% else %}
+                <div class="stock-info" style="background: rgba(220, 38, 38, 0.1); border-color: rgba(220, 38, 38, 0.3); color: #fca5a5;">
+                    ❌ Hết hàng
+                </div>
+                {% endif %}
+
+                {% if product.short_description %}
+                <p class="short-description">{{ product.short_description }}</p>
+                {% endif %}
+
+                {% if product.specs %}
                 <div class="specs">
-                    <h3>Thông số kỹ thuật</h3>
+                    <h3>⚡ Thông số kỹ thuật</h3>
                     <ul>
                         {% for key, value in product.specs.items %}
-                        <li><strong>{{ key }}:</strong> {{ value }}</li>
-                        {% empty %}
-                        <li>Chưa cập nhật</li>
+                        <li>
+                            <strong>{{ key }}</strong>
+                            <span>{{ value }}</span>
+                        </li>
                         {% endfor %}
                     </ul>
                 </div>
+                {% endif %}
+
                 <form action="{% url 'cart_add' product.id %}" method="post" class="add-cart">
                     {% csrf_token %}
-                    <input type="number" name="quantity" min="1" value="1" />
-                    <button class="btn primary" {% if product.stock == 0 %}disabled{% endif %}>
-                        {% if product.stock == 0 %}Hết hàng{% else %}Thêm vào giỏ{% endif %}
+                    <input type="number" name="quantity" min="1" max="{{ product.stock }}" value="1" {% if product.stock == 0 %}disabled{% endif %} />
+                    <button class="btn primary" {% if product.stock == 0 %}disabled{% endif %} style="font-size: 16px;">
+                        {% if product.stock == 0 %}
+                            ❌ Hết hàng
+                        {% else %}
+                            🛒 Thêm vào giỏ hàng
+                        {% endif %}
                     </button>
                 </form>
             </div>
         </div>
-        <article class="card">
-            <h3>Mô tả sản phẩm</h3>
-            <p>{{ product.description|linebreaks }}</p>
+
+        <!-- Description -->
+        {% if product.description %}
+        <article class="card" style="margin-top: 32px;">
+            <h3 style="color: var(--primary); margin-bottom: 16px; font-size: 24px;">📝 Mô tả sản phẩm</h3>
+            <div style="line-height: 1.8; color: var(--text);">
+                {{ product.description|linebreaks }}
+            </div>
         </article>
+        {% endif %}
     </main>
 
     {% include 'store/partials/footer.html' %}
+    
+    <button id="backToTop" class="back-to-top" aria-label="Lên đầu trang">↑</button>
     <script src="{% static 'js/app.js' %}"></script>
 </body>
 </html>
