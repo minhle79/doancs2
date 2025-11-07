@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Đăng ký - ComputerStore</title>
+    <meta name="description" content="Đăng ký tài khoản để mua sắm tại ComputerStore - Hệ thống máy tính uy tín">
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
@@ -13,10 +14,10 @@
     
     <main class="container">
         <div class="card auth-card">
-            <h2 style="text-align: center; margin-bottom: 32px;">✨ Đăng ký tài khoản</h2>
+            <h2 class="auth-title">Đăng ký tài khoản</h2>
             
             {% if messages %}
-            <div class="messages" style="margin-bottom: 24px;">
+            <div class="messages-list">
                 {% for message in messages %}
                 <div class="alert alert-{{ message.tags }}">
                     {{ message }}
@@ -31,7 +32,7 @@
                 <div class="form-group">
                     <label for="{{ field.id_for_label }}">
                         {{ field.label }}
-                        {% if field.field.required %}<span style="color: #fca5a5;">*</span>{% endif %}
+                        {% if field.field.required %}<span class="required-mark">*</span>{% endif %}
                     </label>
                     {{ field }}
                     {% if field.errors %}
@@ -47,14 +48,14 @@
                 </div>
                 {% endfor %}
                 
-                <button class="btn success" type="submit" style="width: 100%; padding: 14px; font-size: 16px; margin-top: 8px;">
-                    🚀 Tạo tài khoản
+                <button class="btn success btn-submit" type="submit">
+                    Tạo tài khoản
                 </button>
             </form>
             
-            <p style="text-align: center; margin-top: 24px; color: var(--muted);">
+            <p class="auth-link">
                 Đã có tài khoản? 
-                <a href="{% url 'login' %}" style="color: var(--primary); font-weight: 600;">Đăng nhập ngay</a>
+                <a href="{% url 'login' %}" class="link-primary">Đăng nhập ngay</a>
             </p>
         </div>
     </main>
@@ -62,5 +63,3 @@
     {% include 'store/partials/footer.html' %}
 </body>
 </html>
-
-

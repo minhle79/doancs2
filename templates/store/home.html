@@ -5,6 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ComputerStore - Cửa hàng máy tính hàng đầu</title>
+    <meta name="description" content="Cửa hàng máy tính uy tín - Laptop, PC, linh kiện chính hãng, giá tốt nhất thị trường. Giao hàng toàn quốc, bảo hành chu đáo.">
+    <meta name="keywords" content="máy tính, laptop, PC, linh kiện máy tính, laptop gaming, PC workstation">
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -23,14 +25,14 @@
                         <span class="hero-subtitle">Giá Tốt Nhất Thị Trường</span>
                     </h1>
                     <p class="hero-description">
-                        ⚡ Sản phẩm chất lượng cao • 🎁 Khuyến mãi hấp dẫn • 🚚 Giao hàng toàn quốc
+                        Sản phẩm chất lượng cao • Khuyến mãi hấp dẫn • Giao hàng toàn quốc
                     </p>
                     <div class="hero-actions">
                         <a href="{% url 'products' %}" class="btn-hero primary">
-                            🛒 Mua sắm ngay
+                            Mua sắm ngay
                         </a>
                         <a href="{% url 'products' %}?sort=newest" class="btn-hero secondary">
-                            ✨ Sản phẩm mới
+                            Sản phẩm mới
                         </a>
                     </div>
                 </div>
@@ -44,7 +46,7 @@
                         <div class="card-text">PC Workstation</div>
                     </div>
                     <div class="floating-card card-3">
-                        <div class="card-icon">⚡</div>
+                        <div class="card-icon">⚙️</div>
                         <div class="card-text">Linh kiện</div>
                     </div>
                 </div>
@@ -58,7 +60,7 @@
 
         <!-- Featured Products -->
         {% if featured %}
-        <h2 class="section-title">✨ Sản phẩm nổi bật</h2>
+        <h2 class="section-title">Sản phẩm nổi bật</h2>
         <section class="banner card">
             <button class="slider-nav prev" aria-label="Trước">‹</button>
             <div class="slider-track slider-wrapper">
@@ -82,7 +84,7 @@
 
         <!-- Deal Products -->
         {% if deals %}
-        <h2 class="section-title">🔥 Ưu đãi đặc biệt</h2>
+        <h2 class="section-title">Ưu đãi đặc biệt</h2>
         <section class="banner card">
             <button class="slider-nav prev" aria-label="Trước">‹</button>
             <div class="slider-track slider-wrapper">
@@ -106,7 +108,7 @@
 
         <!-- Hot Products -->
         {% if hot %}
-        <h2 class="section-title">⚡ Sản phẩm Hot</h2>
+        <h2 class="section-title">Sản phẩm Hot</h2>
         <section class="banner card">
             <button class="slider-nav prev" aria-label="Trước">‹</button>
             <div class="slider-track slider-wrapper">
@@ -129,7 +131,7 @@
         {% endif %}
 
         <!-- Categories -->
-        <h2 class="section-title">📂 Danh mục sản phẩm</h2>
+        <h2 class="section-title">Danh mục sản phẩm</h2>
         <section class="cats-grid">
             {% for c in categories %}
             <a class="cat" href="{% url 'products' %}?category={{ c.slug }}">

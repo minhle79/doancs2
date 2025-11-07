@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ product.name }} - ComputerStore</title>
+    <meta name="description" content="{{ product.short_description|default:product.name }} - Giá {{ product.price|floatformat:0 }}₫. Mua ngay tại ComputerStore.">
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
@@ -14,7 +15,7 @@
     <main class="container">
         <!-- Breadcrumb -->
         <nav class="breadcrumb">
-            <a href="/">🏠 Trang chủ</a>
+            <a href="/">Trang chủ</a>
             &nbsp;›&nbsp;
             <a href="{% url 'products' %}?category={{ product.category.slug }}">{{ product.category.name }}</a>
             &nbsp;›&nbsp;
@@ -66,7 +67,7 @@
                             <div class="quantity-input-group">
                                 <button type="button" class="qty-btn qty-minus" onclick="decreaseQty()" {% if product.stock == 0 %}disabled{% endif %}>−</button>
                                 <input type="number" id="quantity" name="quantity" min="1" max="{{ product.stock }}" value="1" readonly {% if product.stock == 0 %}disabled{% endif %} />
-                                <button type="button" class="qty-btn qty-plus" onclick="increaseQty({{ product.stock }})" {% if product.stock == 0 %}disabled{% endif %}>+</button>
+                                <button type="button" class="qty-btn qty-plus" onclick="increaseQty({{ product.stock|floatformat:0|safe }})" {% if product.stock == 0 %}disabled{% endif %}>+</button>
                             </div>
                         </div>
                         <div class="action-buttons">
@@ -121,7 +122,7 @@
 
         <!-- Related Products -->
         {% if related_products %}
-        <section class="related-products-section" style="margin-top: 48px;">
+        <section class="related-products-section">
             <h2 class="section-title">Sản phẩm liên quan</h2>
             <div class="related-products-slider">
                 <button class="slider-nav prev" onclick="scrollRelatedProducts(-1)" aria-label="Trước">‹</button>
@@ -138,14 +139,14 @@
                         <div class="product-info-centered">
                             <h3 class="product-name"><a href="{% url 'product_detail' p.slug %}">{{ p.name }}</a></h3>
                             <p class="price">{{ p.price|floatformat:0 }} ₫</p>
-                            <form action="{% url 'cart_add' p.id %}" method="post" style="margin-top: 12px;">
+                            <form action="{% url 'cart_add' p.id %}" method="post" class="related-add-form">
                                 {% csrf_token %}
                                 <input type="hidden" name="quantity" value="1" />
-                                <button class="btn primary" style="width: 100%; font-size: 14px;" {% if p.stock == 0 %}disabled{% endif %}>
+                                <button class="btn primary btn-full-width btn-small" {% if p.stock == 0 %}disabled{% endif %}>
                                     {% if p.stock == 0 %}
-                                        ❌ Hết hàng
+                                        Hết hàng
                                     {% else %}
-                                        🛒 Thêm vào giỏ
+                                        Thêm vào giỏ
                                     {% endif %}
                                 </button>
                             </form>

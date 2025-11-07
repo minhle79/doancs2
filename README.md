@@ -58,3 +58,7 @@ python manage.py runserver
 - Có thể thêm upload ảnh cho `Product.image` (cấu hình MEDIA_* đã bật khi DEBUG).
 - Để triển khai production: đặt `DEBUG=False`, cấu hình `ALLOWED_HOSTS`, staticfiles, và SECRET_KEY qua biến môi trường.
 
+## Nạp dữ liệu vào dữ liệu mẫu
+```bash
+python manage.py dumpdata store > store/fixtures/sample_data.json
+```

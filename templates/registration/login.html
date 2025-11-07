@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Đăng nhập - ComputerStore</title>
+    <meta name="description" content="Đăng nhập vào tài khoản ComputerStore của bạn">
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
@@ -13,10 +14,10 @@
     
     <main class="container">
         <div class="card auth-card">
-            <h2 style="text-align: center; margin-bottom: 32px;">🔐 Đăng nhập</h2>
+            <h2 class="auth-title">Đăng nhập</h2>
             
             {% if messages %}
-            <div class="messages" style="margin-bottom: 24px;">
+            <div class="messages-list">
                 {% for message in messages %}
                 <div class="alert alert-{{ message.tags }}">
                     {{ message }}
@@ -41,14 +42,14 @@
                 </div>
                 {% endfor %}
                 
-                <button class="btn primary" type="submit" style="width: 100%; padding: 14px; font-size: 16px; margin-top: 8px;">
-                    ✅ Đăng nhập
+                <button class="btn primary btn-submit" type="submit">
+                    Đăng nhập
                 </button>
             </form>
             
-            <p style="text-align: center; margin-top: 24px; color: var(--muted);">
+            <p class="auth-link">
                 Chưa có tài khoản? 
-                <a href="{% url 'signup' %}" style="color: var(--primary); font-weight: 600;">Đăng ký ngay</a>
+                <a href="{% url 'signup' %}" class="link-primary">Đăng ký ngay</a>
             </p>
         </div>
     </main>
@@ -56,5 +57,3 @@
     {% include 'store/partials/footer.html' %}
 </body>
 </html>
-
-

@@ -2,7 +2,7 @@
 <div class="modal-content">
   <div class="modal-header">
     <h3>Giỏ hàng của bạn</h3>
-    <button id="closeCart" class="btn" style="font-size: 24px; padding: 4px 12px;">×</button>
+    <button id="closeCart" class="btn btn-close-modal">×</button>
   </div>
   
   <div class="modal-body">
@@ -26,15 +26,15 @@
         <div class="cart-actions">
           <form method="post" action="{% url 'cart_remove' item.product.id %}">
             {% csrf_token %}
-            <button class="btn danger" type="submit" title="Xóa khỏi giỏ hàng">🗑️</button>
+            <button class="btn danger btn-icon-only" type="submit" title="Xóa khỏi giỏ hàng" aria-label="Xóa sản phẩm">×</button>
           </form>
         </div>
       </div>
       {% endfor %}
     {% else %}
-      <div style="text-align: center; padding: 40px 20px;">
-        <p style="font-size: 48px; margin-bottom: 12px;">🛒</p>
-        <p style="color: var(--muted);">Giỏ hàng trống</p>
+      <div class="empty-cart-modal">
+        <p class="empty-icon">🛒</p>
+        <p class="empty-text">Giỏ hàng trống</p>
       </div>
     {% endif %}
   </div>
@@ -43,10 +43,10 @@
   <div class="modal-footer">
     <div class="cart-total-row">
       <span>Tổng cộng:</span>
-      <span style="margin-left: 16px;">{{ cart.total_amount|floatformat:0 }} ₫</span>
+      <span class="total-price">{{ cart.total_amount|floatformat:0 }} ₫</span>
     </div>
     <div class="cart-actions-footer">
-      <a href="{% url 'cart_detail' %}" class="btn" style="margin-right: 8px;">Xem giỏ hàng</a>
+      <a href="{% url 'cart_detail' %}" class="btn btn-view-cart">Xem giỏ hàng</a>
       <a href="{% url 'checkout' %}" class="btn primary">Thanh toán</a>
     </div>
   </div>
