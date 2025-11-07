@@ -3,6 +3,9 @@ from django.utils.html import format_html
 from django.db.models import Sum, Count
 from django.urls import reverse
 from django.utils.safestring import mark_safe
+from django import forms
+from django.forms import widgets
+import json
 from .models import Category, Brand, Product, Order, OrderItem
 from .admin_site import ComputerStoreAdminSite
 
@@ -14,6 +17,58 @@ admin_site = ComputerStoreAdminSite(name='computerstore_admin')
 admin.site.site_header = "💻 ComputerStore Admin"
 admin.site.site_title = "ComputerStore Admin"
 admin.site.index_title = "Quản lý cửa hàng máy tính"
+
+
+class KeyValueWidget(widgets.Widget):
+    """Custom widget for editing key-value pairs (specs)"""
+    # Point to template inside the store app templates for proper discovery
+    template_name = 'admin/widgets/key_value_widget.html'
+    
+    def __init__(self, attrs=None):
+        super().__init__(attrs)
+        
+    def format_value(self, value):
+        """Convert dict to list of tuples for rendering"""
+        if value is None or value == '':
+            return []
+        if isinstance(value, str):
+            try:
+                value = json.loads(value)
+            except (json.JSONDecodeError, TypeError):
+                return []
+        if isinstance(value, dict):
+            return list(value.items())
+        return []
+    
+    def value_from_datadict(self, data, files, name):
+        """Convert form data back to dict"""
+        keys = data.getlist(f'{name}_key')
+        values = data.getlist(f'{name}_value')
+        result = {}
+        for k, v in zip(keys, values):
+            if k.strip():  # Only add non-empty keys
+                result[k.strip()] = v.strip()
+        return result
+    
+    class Media:
+        css = {
+            'all': ('admin/css/specs_widget.css',)
+        }
+        js = ('admin/js/specs_widget.js',)
+
+
+class ProductAdminForm(forms.ModelForm):
+    """Custom form for Product admin"""
+    specs = forms.JSONField(
+        required=False,
+        widget=KeyValueWidget(),
+        label="Thông số kỹ thuật",
+        help_text="Nhập các thông số kỹ thuật của sản phẩm"
+    )
+    
+    class Meta:
+        model = Product
+        fields = '__all__'
 
 
 @admin.register(Category)
@@ -58,6 +113,7 @@ class BrandAdmin(admin.ModelAdmin):
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
+    form = ProductAdminForm
     list_display = (
         "image_preview", "name", "brand", "category", 
         "price_display", "stock_status", "badges", "created_at"

@@ -22,6 +22,8 @@
         </nav>
 
         <!-- Product Detail -->
+        <section class="product-section">
+            <div class="product-shell card">
         <div class="product-detail">
             <div class="media">
                 {% if product.image %}
@@ -42,7 +44,7 @@
 
                 <div class="product-meta">
                     <p class="product-brand-cat">
-                        🏷️ {{ product.brand.name }} • 📂 {{ product.category.name }}
+                        {{ product.brand.name }} • {{ product.category.name }}
                     </p>
                     
                     {% if product.stock > 0 %}
@@ -70,16 +72,16 @@
                         <div class="action-buttons">
                             <button type="submit" class="btn btn-add-cart" {% if product.stock == 0 %}disabled{% endif %}>
                                 {% if product.stock == 0 %}
-                                    ❌ Hết hàng
+                                    Hết hàng
                                 {% else %}
-                                    🛒 Thêm vào giỏ
+                                    Thêm vào giỏ
                                 {% endif %}
                             </button>
                             <button type="button" class="btn btn-buy-now" {% if product.stock == 0 %}disabled{% endif %} onclick="buyNow({{ product.id }}, {{ product.stock }})">
                                 {% if product.stock == 0 %}
-                                    ❌ Hết hàng
+                                    Hết hàng
                                 {% else %}
-                                    ⚡ Mua ngay
+                                    Mua ngay
                                 {% endif %}
                             </button>
                         </div>
@@ -87,21 +89,23 @@
                 </div>
             </div>
         </div>
+            </div>
+        </section>
 
         <!-- Description -->
         {% if product.description %}
-        <article class="card" style="margin-top: 32px;">
-            <h3 style="color: var(--primary); margin-bottom: 16px; font-size: 24px;">📝 Mô tả sản phẩm</h3>
-            <div style="line-height: 1.8; color: var(--text);">
+        <section class="section-card card">
+            <h3 class="section-heading">Mô tả sản phẩm</h3>
+            <div class="product-description">
                 {{ product.description|linebreaks }}
             </div>
-        </article>
+        </section>
         {% endif %}
 
         <!-- Specs -->
         {% if product.specs %}
-        <article class="card specs-section" style="margin-top: 32px;">
-            <h3 style="color: var(--primary); margin-bottom: 24px; font-size: 24px; text-align: center;">⚡ Thông số kỹ thuật</h3>
+        <section class="section-card card specs-section">
+            <h3 class="section-heading">Thông số kỹ thuật</h3>
             <table class="specs-table">
                 <tbody>
                     {% for key, value in product.specs.items %}
@@ -112,13 +116,13 @@
                     {% endfor %}
                 </tbody>
             </table>
-        </article>
+        </section>
         {% endif %}
 
         <!-- Related Products -->
         {% if related_products %}
         <section class="related-products-section" style="margin-top: 48px;">
-            <h2 class="section-title">🔗 Sản phẩm liên quan</h2>
+            <h2 class="section-title">Sản phẩm liên quan</h2>
             <div class="related-products-slider">
                 <button class="slider-nav prev" onclick="scrollRelatedProducts(-1)" aria-label="Trước">‹</button>
                 <div class="related-products-track" id="relatedProductsTrack">

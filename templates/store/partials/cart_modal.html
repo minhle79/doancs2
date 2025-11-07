@@ -42,12 +42,12 @@
   {% if cart %}
   <div class="modal-footer">
     <div class="cart-total-row">
-      <span>💰 Tổng cộng:</span>
+      <span>Tổng cộng:</span>
       <span style="margin-left: 16px;">{{ cart.total_amount|floatformat:0 }} ₫</span>
     </div>
     <div class="cart-actions-footer">
       <a href="{% url 'cart_detail' %}" class="btn" style="margin-right: 8px;">Xem giỏ hàng</a>
-      <a href="{% url 'checkout' %}" class="btn primary">✅ Thanh toán</a>
+      <a href="{% url 'checkout' %}" class="btn primary">Thanh toán</a>
     </div>
   </div>
   {% endif %}

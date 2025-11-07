@@ -83,6 +83,8 @@ class OrderItem(models.Model):
         return f"{self.product.name} x {self.quantity}"
 
     def line_total(self):
+        if self.quantity is None or self.price is None:
+            return 0
         return self.quantity * self.price
 
 
