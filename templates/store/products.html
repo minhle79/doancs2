@@ -14,7 +14,7 @@
   <main class="container">
     <!-- Breadcrumb -->
     <nav class="breadcrumb">
-      <a href="/">🏠 Trang chủ</a>
+      <a href="/">Trang chủ</a>
       &nbsp;›&nbsp;
       {% if category_slug %}
         {% for c in categories %}
@@ -23,35 +23,38 @@
           {% endif %}
         {% endfor %}
       {% else %}
-        <span>📦 Tất cả sản phẩm</span>
+        <span>Tất cả sản phẩm</span>
       {% endif %}
     </nav>
 
     <!-- Filters -->
-    <section class="filters card">
-      <form method="get" class="filters-form">
-        <input type="text" name="q" placeholder="🔍 Tìm kiếm sản phẩm..." value="{{ q }}" />
-        <select name="category">
-          <option value="">📂 Tất cả danh mục</option>
-          {% for c in categories %}
-            <option value="{{ c.slug }}" {% if category_slug == c.slug %}selected{% endif %}>{{ c.name }}</option>
-          {% endfor %}
-        </select>
-        <select name="brand">
-          <option value="">🏷️ Tất cả thương hiệu</option>
-          {% for b in brands %}
-            <option value="{{ b.slug }}" {% if brand_slug == b.slug %}selected{% endif %}>{{ b.name }}</option>
-          {% endfor %}
-        </select>
-        <select name="sort">
-          <option value="">📊 Sắp xếp</option>
-          <option value="price_asc" {% if sort == 'price_asc' %}selected{% endif %}>💰 Giá tăng dần</option>
-          <option value="price_desc" {% if sort == 'price_desc' %}selected{% endif %}>💸 Giá giảm dần</option>
-          <option value="newest" {% if sort == 'newest' %}selected{% endif %}>✨ Mới nhất</option>
-        </select>
-        <button type="submit" class="btn primary">Áp dụng</button>
-      </form>
-    </section>
+    <div class="filters-wrapper">
+      <section class="filters card">
+        <form method="get" class="filters-form">
+          <input type="text" name="q" placeholder="Tìm kiếm sản phẩm..." value="{{ q }}" />
+          <select name="category">
+            <option value="">Tất cả danh mục</option>
+            {% for c in categories %}
+              <option value="{{ c.slug }}" {% if category_slug == c.slug %}selected{% endif %}>{{ c.name }}</option>
+            {% endfor %}
+          </select>
+          <select name="brand">
+            <option value="">Tất cả thương hiệu</option>
+            {% for b in brands %}
+              <option value="{{ b.slug }}" {% if brand_slug == b.slug %}selected{% endif %}>{{ b.name }}</option>
+            {% endfor %}
+          </select>
+          <select name="sort">
+            <option value="">Sắp xếp</option>
+            <option value="price_asc" {% if sort == 'price_asc' %}selected{% endif %}>Giá tăng dần</option>
+            <option value="price_desc" {% if sort == 'price_desc' %}selected{% endif %}>Giá giảm dần</option>
+            <option value="newest" {% if sort == 'newest' %}selected{% endif %}>Mới nhất</option>
+          </select>
+          <button type="submit" class="btn primary">Áp dụng</button>
+        </form>
+      </section>
+      <div class="filters-count" aria-label="Số sản phẩm trên trang">Hiển thị: <strong>{{ products|length }}</strong> sản phẩm</div>
+    </div>
 
     <!-- Products Grid -->
     <section class="grid">
@@ -65,13 +68,13 @@
           {% endif %}
           <h3>{{ p.name }}</h3>
         </a>
-        <div style="padding: 0 20px 20px;">
-          <p class="muted" style="margin-bottom: 8px;">{{ p.brand.name }} • {{ p.category.name }}</p>
-          <p class="price" style="margin-bottom: 12px;">{{ p.price|floatformat:0 }} ₫</p>
+        <div class="card-body">
+          <p class="muted">{{ p.brand.name }} • {{ p.category.name }}</p>
+          <p class="price">{{ p.price|floatformat:0 }} ₫</p>
           <form action="{% url 'cart_add' p.id %}" method="post">
             {% csrf_token %}
             {% if p.stock > 0 %}
-              <button class="btn primary" style="width: 100%;">🛒 Thêm vào giỏ</button>
+              <button class="btn primary" style="width: 100%;">Thêm vào giỏ</button>
             {% else %}
               <button class="btn" disabled style="width: 100%; opacity: 0.5;">Hết hàng</button>
             {% endif %}

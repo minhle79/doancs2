@@ -2,6 +2,19 @@
 document.querySelectorAll('.dropdown').forEach(dd => {
   dd.addEventListener('mouseenter', () => dd.classList.add('open'));
   dd.addEventListener('mouseleave', () => dd.classList.remove('open'));
+  // allow keyboard and click access to open/close dropdowns (useful on touch devices)
+  const trigger = dd.querySelector('.btn');
+  if (trigger) {
+    trigger.addEventListener('click', (e) => {
+      e.preventDefault();
+      dd.classList.toggle('open');
+    });
+  }
+  dd.addEventListener('focusin', () => dd.classList.add('open'));
+  dd.addEventListener('focusout', (e) => {
+    // close when focus moves outside the dropdown element
+    if (!dd.contains(e.relatedTarget)) dd.classList.remove('open');
+  });
 });
 
 // Initialize carousels / slider-navs
@@ -138,8 +151,21 @@ function showToast(message, type='success'){
 
 // Update cart badge count
 function setCartCount(n){
-  const badge = document.querySelector('#openCart .badge');
-  if (badge) badge.textContent = n;
+  const btn = document.getElementById('openCart');
+  if (!btn) return;
+  let badge = btn.querySelector('.badge');
+  if (n > 0) {
+    if (!badge) {
+      badge = document.createElement('span');
+      badge.className = 'badge';
+      btn.appendChild(badge);
+    }
+    badge.textContent = n;
+    btn.setAttribute('aria-label', `Giỏ hàng, ${n} sản phẩm`);
+  } else {
+    if (badge) badge.remove();
+    btn.setAttribute('aria-label', 'Mở giỏ hàng');
+  }
 }
 
 // Intercept add/remove cart forms
