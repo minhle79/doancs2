@@ -5,3 +5,8 @@
     {{ block.super }}
     <link rel="stylesheet" type="text/css" href="{% static 'admin/css/custom_admin.css' %}">
 {% endblock %}
+
+{% block extrahead %}
+    {{ block.super }}
+    <script src="{% static 'admin/js/custom_admin.js' %}"></script>
+{% endblock %}

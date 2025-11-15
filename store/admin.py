@@ -123,6 +123,34 @@ class ProductAdmin(admin.ModelAdmin):
     prepopulated_fields = {"slug": ("name",)}
     list_per_page = 25
     readonly_fields = ("image_preview_large", "created_at")
+    date_hierarchy = "created_at"
+    list_select_related = ("brand", "category")
+    save_on_top = True
+    
+    # Add filters by stock levels
+    class StockFilter(admin.SimpleListFilter):
+        title = 'Tình trạng kho'
+        parameter_name = 'stock_level'
+        
+        def lookups(self, request, model_admin):
+            return (
+                ('in_stock', 'Còn hàng'),
+                ('low_stock', 'Sắp hết (< 5)'),
+                ('out_of_stock', 'Hết hàng'),
+            )
+        
+        def queryset(self, request, queryset):
+            if self.value() == 'in_stock':
+                return queryset.filter(stock__gt=5)
+            if self.value() == 'low_stock':
+                return queryset.filter(stock__gt=0, stock__lte=5)
+            if self.value() == 'out_of_stock':
+                return queryset.filter(stock=0)
+    
+    list_filter = (
+        "brand", "category", StockFilter,
+        "is_featured", "is_deal", "is_hot", "created_at"
+    )
     
     fieldsets = (
         ("Thông tin cơ bản", {
@@ -140,7 +168,6 @@ class ProductAdmin(admin.ModelAdmin):
         }),
         ("Thông số kỹ thuật", {
             "fields": ("specs",),
-            "classes": ("collapse",)
         }),
         ("Flags", {
             "fields": ("is_featured", "is_deal", "is_hot"),
@@ -207,7 +234,43 @@ class ProductAdmin(admin.ModelAdmin):
         return format_html(''.join(badges)) if badges else "-"
     badges.short_description = "Nhãn"
     
-    actions = ["mark_as_featured", "mark_as_deal", "mark_as_hot", "remove_all_badges"]
+    actions = [
+        "mark_as_featured", "mark_as_deal", "mark_as_hot", 
+        "remove_all_badges", "duplicate_products", "export_to_csv"
+    ]
+    
+    def duplicate_products(self, request, queryset):
+        """Duplicate selected products"""
+        count = 0
+        for product in queryset:
+            product.pk = None
+            product.name = f"{product.name} (Copy)"
+            product.slug = f"{product.slug}-copy"
+            product.save()
+            count += 1
+        self.message_user(request, f"Đã nhân bản {count} sản phẩm")
+    duplicate_products.short_description = "📋 Nhân bản sản phẩm"
+    
+    def export_to_csv(self, request, queryset):
+        """Export products to CSV"""
+        import csv
+        from django.http import HttpResponse
+        
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = 'attachment; filename="products.csv"'
+        
+        writer = csv.writer(response)
+        writer.writerow(['ID', 'Name', 'Brand', 'Category', 'Price', 'Stock', 'Created'])
+        
+        for product in queryset:
+            writer.writerow([
+                product.id, product.name, product.brand.name, 
+                product.category.name, product.price, product.stock,
+                product.created_at.strftime('%Y-%m-%d')
+            ])
+        
+        return response
+    export_to_csv.short_description = "📥 Export sang CSV"
     
     def mark_as_featured(self, request, queryset):
         updated = queryset.update(is_featured=True)
@@ -265,6 +328,9 @@ class OrderAdmin(admin.ModelAdmin):
     inlines = [OrderItemInline]
     list_per_page = 25
     date_hierarchy = "created_at"
+    list_select_related = ("user",)
+    save_on_top = True
+    actions = ["export_orders_csv"]
     
     fieldsets = (
         ("Thông tin đơn hàng", {
@@ -277,6 +343,32 @@ class OrderAdmin(admin.ModelAdmin):
             "fields": ("order_summary", "total_amount")
         }),
     )
+    
+    def get_queryset(self, request):
+        """Optimize queryset with prefetch_related"""
+        qs = super().get_queryset(request)
+        return qs.select_related('user').prefetch_related('items__product')
+    
+    def export_orders_csv(self, request, queryset):
+        """Export orders to CSV"""
+        import csv
+        from django.http import HttpResponse
+        
+        response = HttpResponse(content_type='text/csv')
+        response['Content-Disposition'] = 'attachment; filename="orders.csv"'
+        
+        writer = csv.writer(response)
+        writer.writerow(['Order ID', 'Customer', 'Email', 'Phone', 'Total', 'Date'])
+        
+        for order in queryset:
+            writer.writerow([
+                order.id, order.full_name, order.email, 
+                order.phone, order.total_amount,
+                order.created_at.strftime('%Y-%m-%d %H:%M')
+            ])
+        
+        return response
+    export_orders_csv.short_description = "📥 Export đơn hàng sang CSV"
     
     def order_id_display(self, obj):
         return format_html(

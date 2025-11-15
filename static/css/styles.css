@@ -436,6 +436,10 @@ input::placeholder {
 .product-detail .description {
   color: var(--text);
   line-height: 1.8;
+  text-align: center;
+  padding: 20px;
+  background: rgba(99, 102, 241, 0.03);
+  border-radius: var(--radius);
 }
 
 /* Robust description wrapping */
@@ -445,11 +449,13 @@ input::placeholder {
   word-wrap: break-word;
   overflow-wrap: anywhere;
   white-space: pre-wrap; /* preserve linebreaks from linebreaks filter */
+  text-align: center;
 }
 
 /* Product detail wrappers */
 .product-section {
   margin-top: 16px;
+  text-align: center;
 }
 
 .product-shell {
@@ -463,6 +469,7 @@ input::placeholder {
 /* Unified section card and headings (Description, Specs) */
 .section-card {
   margin-top: 32px;
+  text-align: center;
 }
 
 .section-heading {
@@ -474,6 +481,7 @@ input::placeholder {
   background-clip: text;
   -webkit-text-fill-color: transparent;
   position: relative;
+  text-align: center;
 }
 
 .section-heading::after {
@@ -481,7 +489,7 @@ input::placeholder {
   display: block;
   width: 64px;
   height: 3px;
-  margin-top: 10px;
+  margin: 10px auto 0;
   background: var(--gradient-primary);
   border-radius: 2px;
 }
@@ -495,11 +503,12 @@ input::placeholder {
 }
 
 .product-detail .specs h3 {
-  margin: 0 0 16px 0;
+  margin: 0 0 24px 0;
   color: var(--primary);
   font-size: 20px;
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
 }
 
@@ -513,24 +522,39 @@ input::placeholder {
   padding: 0;
   margin: 0;
   display: grid;
-  gap: 12px;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px 24px;
 }
 
 .product-detail .specs li {
   display: flex;
   justify-content: space-between;
-  padding: 12px 0;
-  border-bottom: 1px dashed var(--border);
+  align-items: center;
+  padding: 14px 16px;
+  background: rgba(30, 41, 59, 0.5);
+  border-radius: 8px;
+  border: 1px solid rgba(99, 102, 241, 0.1);
   font-size: 14px;
+  transition: var(--transition);
 }
 
-.product-detail .specs li:last-child {
-  border-bottom: none;
+.product-detail .specs li:hover {
+  background: rgba(30, 41, 59, 0.8);
+  border-color: rgba(99, 102, 241, 0.3);
+  transform: translateY(-2px);
 }
 
 .product-detail .specs li strong {
   color: var(--muted);
   font-weight: 600;
+  min-width: 80px;
+  text-align: left;
+}
+
+.product-detail .specs li span {
+  color: var(--text);
+  font-weight: 500;
+  text-align: right;
 }
 
 .product-detail .add-cart {
@@ -1388,6 +1412,17 @@ input::placeholder {
   .btn-add-cart, .btn-buy-now {
     width: 100%;
   }
+  
+  /* Specs 2 columns → 1 column on mobile */
+  .product-detail .specs ul {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  
+  .specs-table td {
+    padding: 12px 16px;
+    font-size: 13px;
+  }
 }
 
 /* Hero Banner Styles */
@@ -1700,6 +1735,16 @@ input::placeholder {
   border: 1px solid var(--border);
 }
 
+.specs-section .section-heading {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.specs-section .section-heading::after {
+  margin-left: auto;
+  margin-right: auto;
+}
+
 .specs-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -1921,40 +1966,50 @@ input::placeholder {
 /* Specs Table */
 .specs-table {
   width: 100%;
-  border-collapse: collapse;
-  background: var(--bg-secondary);
-  border-radius: var(--radius);
-  overflow: hidden;
+  border-collapse: separate;
+  border-spacing: 0;
+  display: table;
+  background: transparent;
+}
+
+.specs-table tbody {
+  display: table-row-group;
 }
 
 .specs-table tbody tr {
-  border-bottom: 1px solid var(--border);
-  transition: var(--transition);
-}
-
-.specs-table tbody tr:last-child {
-  border-bottom: none;
-}
-
-.specs-table tbody tr:hover {
-  background: var(--card-hover);
+  display: table-row;
 }
 
 .specs-table td {
+  display: table-cell;
   padding: 16px 20px;
+  background: rgba(30, 41, 59, 0.5);
+  border: 1px solid rgba(99, 102, 241, 0.1);
+  transition: var(--transition);
+  text-align: center;
+  vertical-align: middle;
+}
+
+.specs-table tbody tr:hover td {
+  background: rgba(30, 41, 59, 0.8);
+  border-color: rgba(99, 102, 241, 0.3);
 }
 
 .specs-table .spec-label {
   font-weight: 600;
-  color: var(--text);
-  width: 40%;
-  font-size: 15px;
+  color: var(--muted);
+  font-size: 14px;
+  text-align: center;
+  width: 50%;
+  border-right: 1px solid rgba(99, 102, 241, 0.2);
 }
 
 .specs-table .spec-value {
-  color: var(--muted);
-  font-size: 15px;
-  text-align: left;
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 500;
+  text-align: center;
+  width: 50%;
 }
 
 /* Related Products Slider */
