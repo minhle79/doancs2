@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ComputerStore - Cửa hàng máy tính hàng đầu</title>
+    <title>MinhLocStore - Cửa hàng máy tính hàng đầu</title>
     <meta name="description" content="Cửa hàng máy tính uy tín - Laptop, PC, linh kiện chính hãng, giá tốt nhất thị trường. Giao hàng toàn quốc, bảo hành chu đáo.">
     <meta name="keywords" content="máy tính, laptop, PC, linh kiện máy tính, laptop gaming, PC workstation">
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
@@ -42,7 +42,7 @@
                         <div class="card-text">Laptop Gaming</div>
                     </div>
                     <div class="floating-card card-2">
-                        <div class="card-icon">🖥️</div>
+                        <div class="card-icon">🖥️🖥</div>
                         <div class="card-text">PC Workstation</div>
                     </div>
                     <div class="floating-card card-3">
@@ -72,9 +72,17 @@
                         {% else %}
                         <img src="{% static 'img/placeholder.png' %}" alt="{{ p.name }}" loading="lazy" />
                         {% endif %}
+                        <div class="product-badge featured">⭐</div>
                         <h3>{{ p.name }}</h3>
                     </a>
-                    <p class="price">{{ p.price|floatformat:0 }} ₫</p>
+                    <div class="product-footer">
+                        <p class="price">{{ p.price|floatformat:0 }} ₫</p>
+                        {% if p.stock > 0 %}
+                        <span class="stock-badge in-stock">Còn hàng</span>
+                        {% else %}
+                        <span class="stock-badge out-stock">Hết hàng</span>
+                        {% endif %}
+                    </div>
                 </article>
                 {% endfor %}
             </div>
@@ -96,9 +104,17 @@
                         {% else %}
                         <img src="{% static 'img/placeholder.png' %}" alt="{{ p.name }}" loading="lazy" />
                         {% endif %}
+                        <div class="product-badge deal">🔥</div>
                         <h3>{{ p.name }}</h3>
                     </a>
-                    <p class="price">{{ p.price|floatformat:0 }} ₫</p>
+                    <div class="product-footer">
+                        <p class="price">{{ p.price|floatformat:0 }} ₫</p>
+                        {% if p.stock > 0 %}
+                        <span class="stock-badge in-stock">Còn hàng</span>
+                        {% else %}
+                        <span class="stock-badge out-stock">Hết hàng</span>
+                        {% endif %}
+                    </div>
                 </article>
                 {% endfor %}
             </div>
@@ -120,9 +136,17 @@
                         {% else %}
                         <img src="{% static 'img/placeholder.png' %}" alt="{{ p.name }}" loading="lazy" />
                         {% endif %}
+                        <div class="product-badge hot">⚡</div>
                         <h3>{{ p.name }}</h3>
                     </a>
-                    <p class="price">{{ p.price|floatformat:0 }} ₫</p>
+                    <div class="product-footer">
+                        <p class="price">{{ p.price|floatformat:0 }} ₫</p>
+                        {% if p.stock > 0 %}
+                        <span class="stock-badge in-stock">Còn hàng</span>
+                        {% else %}
+                        <span class="stock-badge out-stock">Hết hàng</span>
+                        {% endif %}
+                    </div>
                 </article>
                 {% endfor %}
             </div>

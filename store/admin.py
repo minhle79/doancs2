@@ -330,7 +330,7 @@ class OrderAdmin(admin.ModelAdmin):
     date_hierarchy = "created_at"
     list_select_related = ("user",)
     save_on_top = True
-    actions = ["export_orders_csv"]
+    actions = ["export_orders_csv", "delete_selected_orders"]
     
     fieldsets = (
         ("Thông tin đơn hàng", {
@@ -369,6 +369,25 @@ class OrderAdmin(admin.ModelAdmin):
         
         return response
     export_orders_csv.short_description = "📥 Export đơn hàng sang CSV"
+    
+    def delete_selected_orders(self, request, queryset):
+        """Delete selected orders with confirmation"""
+        count = queryset.count()
+        if count > 0:
+            # Delete the orders (will cascade delete OrderItems automatically)
+            queryset.delete()
+            self.message_user(
+                request, 
+                f"Đã xóa thành công {count} đơn hàng",
+                level='success'
+            )
+        else:
+            self.message_user(
+                request, 
+                "Không có đơn hàng nào được chọn",
+                level='warning'
+            )
+    delete_selected_orders.short_description = "🗑️ Xóa đơn hàng đã chọn"
     
     def order_id_display(self, obj):
         return format_html(
@@ -436,6 +455,7 @@ class OrderAdmin(admin.ModelAdmin):
         return False
     
     def has_delete_permission(self, request, obj=None):
-        return False
+        """Allow delete permission for orders"""
+        return True
 
 
