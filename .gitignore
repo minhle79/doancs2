@@ -18,10 +18,11 @@ env/
 *.log
 db.sqlite3
 db.sqlite3-journal
-/media/
 /staticfiles/
-/static/
 *.pot
+
+# Media files (uncomment if you don't want to track uploads)
+# /media/
 
 # Environment variables
 .env
@@ -44,3 +45,13 @@ htmlcov/
 .coverage.*
 coverage.xml
 *.cover
+
+# Documentation (temporary files)
+*.md~
+ADMIN_*.md
+
+# Backup files
+*.bak
+*.backup
+*.old
+*.tmp

@@ -6,7 +6,7 @@ from django.utils.safestring import mark_safe
 from django import forms
 from django.forms import widgets
 import json
-from .models import Category, Brand, Product, Order, OrderItem
+from .models import Category, Brand, Product, Order, OrderItem, ProductImage
 from .admin_site import ComputerStoreAdminSite
 
 
@@ -73,10 +73,18 @@ class ProductAdminForm(forms.ModelForm):
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
-    list_display = ("name", "slug", "product_count", "created_badge")
+    list_display = ("name", "slug", "product_count", "created_at", "updated_at", "created_badge")
     prepopulated_fields = {"slug": ("name",)}
     search_fields = ["name", "slug"]
     list_per_page = 20
+    readonly_fields = ("created_at", "updated_at")
+    list_filter = ("created_at", "updated_at")
+    
+    class Media:
+        css = {
+            'all': ('admin/css/custom_admin.css',)
+        }
+        js = ('admin/js/custom_admin.js',)
     
     def product_count(self, obj):
         count = obj.products.count()
@@ -85,18 +93,24 @@ class CategoryAdmin(admin.ModelAdmin):
     product_count.short_description = "Số sản phẩm"
     
     def created_badge(self, obj):
-        return format_html(
-            '<span style="background: #10b981; color: white; padding: 4px 8px; border-radius: 4px; font-size: 11px;">✓ Active</span>'
-        )
+        return "Active"
     created_badge.short_description = "Trạng thái"
 
 
 @admin.register(Brand)
 class BrandAdmin(admin.ModelAdmin):
-    list_display = ("name", "slug", "product_count", "status_badge")
+    list_display = ("name", "slug", "product_count", "created_at", "updated_at", "status_badge")
     prepopulated_fields = {"slug": ("name",)}
     search_fields = ["name", "slug"]
     list_per_page = 20
+    readonly_fields = ("created_at", "updated_at")
+    list_filter = ("created_at", "updated_at")
+    
+    class Media:
+        css = {
+            'all': ('admin/css/custom_admin.css',)
+        }
+        js = ('admin/js/custom_admin.js',)
     
     def product_count(self, obj):
         count = obj.products.count()
@@ -105,15 +119,30 @@ class BrandAdmin(admin.ModelAdmin):
     product_count.short_description = "Số sản phẩm"
     
     def status_badge(self, obj):
-        return format_html(
-            '<span style="background: #6366f1; color: white; padding: 4px 8px; border-radius: 4px; font-size: 11px;">Active</span>'
-        )
+        return "Active"
     status_badge.short_description = "Trạng thái"
+
+
+class ProductImageInline(admin.TabularInline):
+    model = ProductImage
+    extra = 1
+    fields = ("image", "order", "image_preview")
+    readonly_fields = ("image_preview",)
+    
+    def image_preview(self, obj):
+        if obj.image:
+            return format_html(
+                '<img src="{}" style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);" />',
+                obj.image.url
+            )
+        return "Chưa có ảnh"
+    image_preview.short_description = "Preview"
 
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
     form = ProductAdminForm
+    inlines = [ProductImageInline]
     list_display = (
         "image_preview", "name", "brand", "category", 
         "price_display", "stock_status", "badges", "created_at"
@@ -179,6 +208,12 @@ class ProductAdmin(admin.ModelAdmin):
         }),
     )
     
+    class Media:
+        css = {
+            'all': ('admin/css/custom_admin.css',)
+        }
+        js = ('admin/js/custom_admin.js',)
+    
     def image_preview(self, obj):
         if obj.image:
             return format_html(
@@ -198,40 +233,29 @@ class ProductAdmin(admin.ModelAdmin):
     image_preview_large.short_description = "Xem trước hình ảnh"
     
     def price_display(self, obj):
-        return format_html(
-            '<span style="color: #10b981; font-weight: 700;">{} ₫</span>',
-            f'{float(obj.price):,.0f}'
-        )
+        return f'{float(obj.price):,.0f} ₫'
     price_display.short_description = "Giá"
     price_display.admin_order_field = "price"
     
     def stock_status(self, obj):
         if obj.stock == 0:
-            return format_html(
-                '<span style="background: #dc2626; color: white; padding: 4px 12px; border-radius: 4px; font-size: 11px;">❌ Hết hàng</span>'
-            )
+            return "Hết hàng"
         elif obj.stock < 5:
-            return format_html(
-                '<span style="background: #f59e0b; color: white; padding: 4px 12px; border-radius: 4px; font-size: 11px;">⚠️ Còn {} SP</span>',
-                obj.stock
-            )
+            return f"Sắp hết ({obj.stock})"
         else:
-            return format_html(
-                '<span style="background: #10b981; color: white; padding: 4px 12px; border-radius: 4px; font-size: 11px;">✅ Còn {} SP</span>',
-                obj.stock
-            )
+            return f"Còn hàng ({obj.stock})"
     stock_status.short_description = "Tồn kho"
     stock_status.admin_order_field = "stock"
     
     def badges(self, obj):
         badges = []
         if obj.is_featured:
-            badges.append('<span style="background: #6366f1; color: white; padding: 2px 8px; border-radius: 4px; font-size: 10px; margin-right: 4px;">⭐ Featured</span>')
+            badges.append('Featured')
         if obj.is_deal:
-            badges.append('<span style="background: #ec4899; color: white; padding: 2px 8px; border-radius: 4px; font-size: 10px; margin-right: 4px;">🔥 Deal</span>')
+            badges.append('Deal')
         if obj.is_hot:
-            badges.append('<span style="background: #f59e0b; color: white; padding: 2px 8px; border-radius: 4px; font-size: 10px; margin-right: 4px;">⚡ Hot</span>')
-        return format_html(''.join(badges)) if badges else "-"
+            badges.append('Hot')
+        return ', '.join(badges) if badges else "-"
     badges.short_description = "Nhãn"
     
     actions = [
@@ -306,10 +330,7 @@ class OrderItemInline(admin.TabularInline):
     product_link.short_description = "Sản phẩm"
     
     def line_total_display(self, obj):
-        return format_html(
-            '<span style="color: #10b981; font-weight: 700;">{} ₫</span>',
-            f'{float(obj.line_total()):,.0f}'
-        )
+        return f'{float(obj.line_total()):,.0f} ₫'
     line_total_display.short_description = "Thành tiền"
 
 
@@ -374,49 +395,37 @@ class OrderAdmin(admin.ModelAdmin):
         """Delete selected orders with confirmation"""
         count = queryset.count()
         if count > 0:
-            # Delete the orders (will cascade delete OrderItems automatically)
             queryset.delete()
             self.message_user(
                 request, 
                 f"Đã xóa thành công {count} đơn hàng",
-                level='success'
+                level='SUCCESS'
             )
         else:
             self.message_user(
                 request, 
                 "Không có đơn hàng nào được chọn",
-                level='warning'
+                level='WARNING'
             )
     delete_selected_orders.short_description = "🗑️ Xóa đơn hàng đã chọn"
     
     def order_id_display(self, obj):
-        return format_html(
-            '<span style="background: #6366f1; color: white; padding: 4px 12px; border-radius: 4px; font-weight: 700;">#{}</span>',
-            obj.id
-        )
+        return f"#{obj.id}"
     order_id_display.short_description = "Mã ĐH"
     order_id_display.admin_order_field = "id"
     
     def total_amount_display(self, obj):
-        return format_html(
-            '<span style="color: #10b981; font-weight: 700; font-size: 14px;">{} ₫</span>',
-            f'{float(obj.total_amount):,.0f}'
-        )
+        return f'{float(obj.total_amount):,.0f} ₫'
     total_amount_display.short_description = "Tổng tiền"
     total_amount_display.admin_order_field = "total_amount"
     
     def items_count(self, obj):
         count = obj.items.count()
-        return format_html(
-            '<span style="background: #e5e7eb; color: #1f2937; padding: 4px 10px; border-radius: 4px; font-weight: 600;">{} SP</span>',
-            count
-        )
+        return f"{count} SP"
     items_count.short_description = "Số SP"
     
     def status_badge(self, obj):
-        return format_html(
-            '<span style="background: #10b981; color: white; padding: 6px 12px; border-radius: 4px; font-weight: 600;">✅ Hoàn thành</span>'
-        )
+        return "Hoàn thành"
     status_badge.short_description = "Trạng thái"
     
     def order_summary(self, obj):
@@ -457,5 +466,11 @@ class OrderAdmin(admin.ModelAdmin):
     def has_delete_permission(self, request, obj=None):
         """Allow delete permission for orders"""
         return True
+    
+    class Media:
+        css = {
+            'all': ('admin/css/custom_admin.css',)
+        }
+        js = ('admin/js/custom_admin.js',)
 
 

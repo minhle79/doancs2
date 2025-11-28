@@ -1,0 +1,96 @@
+/* Specs Widget CSS - Dark Mode */
+
+.specs-editor {
+    background: #2d2d2d !important;
+    border: 1px solid #444;
+    padding: 15px;
+    margin: 10px 0;
+    color: #e0e0e0 !important;
+}
+
+.specs-list {
+    margin-bottom: 10px;
+}
+
+.spec-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 8px;
+    align-items: center;
+}
+
+.spec-key,
+.spec-value {
+    flex: 1;
+    padding: 6px 8px;
+    border: 1px solid #444 !important;
+    font-size: 13px;
+    color: #e0e0e0 !important;
+}
+
+.spec-key {
+    background: #252525 !important;
+    font-weight: 500;
+}
+
+.spec-value {
+    background: #1a1a1a !important;
+}
+
+.spec-key:focus,
+.spec-value:focus {
+    border-color: #4a9eff !important;
+    outline: none;
+}
+
+.spec-key::placeholder,
+.spec-value::placeholder {
+    color: #888 !important;
+}
+
+.spec-remove {
+    background: #d93025 !important;
+    border: none !important;
+    color: white !important;
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.spec-remove:hover {
+    background: #b31412 !important;
+}
+
+.spec-add {
+    background: #1a73e8 !important;
+    border: none !important;
+    color: white !important;
+    padding: 8px 16px;
+    cursor: pointer;
+    font-size: 13px;
+    width: 100%;
+}
+
+.spec-add:hover {
+    background: #1557b0 !important;
+}
+
+/* Empty state */
+.specs-list:empty::before {
+    content: "Chưa có thông số kỹ thuật. Nhấn nút 'Thêm thông số' để thêm.";
+    display: block;
+    padding: 15px;
+    text-align: center;
+    color: #aaa !important;
+    font-style: italic;
+    background: #1a1a1a !important;
+    border: 1px dashed #444;
+}
+
+/* Help text */
+.specs-editor + .help {
+    margin-top: 8px;
+    color: #aaa !important;
+    font-size: 12px;
+}

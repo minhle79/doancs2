@@ -54,6 +54,9 @@ TEMPLATES = [
                 "django.contrib.messages.context_processors.messages",
                 "store.context_processors.nav_context",
             ],
+            "libraries": {
+                "custom_filters": "store.templatetags.custom_filters",
+            },
         },
     }
 ]

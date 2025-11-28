@@ -9,7 +9,7 @@ from django.template.loader import render_to_string
 from django.shortcuts import get_object_or_404, redirect, render
 
 from .cart import Cart
-from .forms import CheckoutForm, SignupForm
+from .forms import CheckoutForm, SignupForm, ProfileForm
 from .models import Brand, Category, Order, OrderItem, Product
 
 
@@ -268,5 +268,67 @@ def api_suggest(request):
         .values("id", "name", "slug")[:5]
     )
     return JsonResponse({"results": list(items)})
+
+
+@login_required
+def profile(request):
+    """View user profile"""
+    user = request.user
+    # Get user's order statistics
+    orders = Order.objects.filter(user=user).order_by('-created_at')
+    total_orders = orders.count()
+    total_spent = sum(order.total_amount for order in orders)
+    
+    ctx = {
+        'user': user,
+        'total_orders': total_orders,
+        'total_spent': total_spent,
+        'recent_orders': orders[:3],  # 3 most recent orders
+    }
+    return render(request, 'store/profile.html', ctx)
+
+
+@login_required
+def order_history(request):
+    """View user's order history"""
+    orders = Order.objects.filter(user=request.user).prefetch_related('items__product').order_by('-created_at')
+    
+    paginator = Paginator(orders, 10)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    
+    ctx = {
+        'orders': page_obj,
+    }
+    return render(request, 'store/order_history.html', ctx)
+
+
+@login_required
+def order_detail(request, order_id):
+    """View order detail"""
+    order = get_object_or_404(Order, id=order_id, user=request.user)
+    
+    ctx = {
+        'order': order,
+    }
+    return render(request, 'store/order_detail.html', ctx)
+
+
+@login_required
+def profile_edit(request):
+    """Edit user profile information"""
+    user = request.user
+    if request.method == "POST":
+        form = ProfileForm(request.POST, instance=user)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Cập nhật thông tin thành công!")
+            return redirect("profile")
+        else:
+            messages.error(request, "Vui lòng kiểm tra lại thông tin.")
+    else:
+        form = ProfileForm(instance=user)
+
+    return render(request, "store/profile_edit.html", {"form": form})
 
 

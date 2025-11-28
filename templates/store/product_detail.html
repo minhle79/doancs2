@@ -1,11 +1,12 @@
 {% load static %}
+{% load custom_filters %}
 <!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ product.name }} - ComputerStore</title>
-    <meta name="description" content="{{ product.short_description|default:product.name }} - Giá {{ product.price|floatformat:0 }}₫. Mua ngay tại ComputerStore.">
+    <meta name="description" content="{{ product.short_description|default:product.name }} - Giá {{ product.price|intcomma }}₫. Mua ngay tại ComputerStore.">
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
@@ -27,17 +28,35 @@
             <div class="product-shell card">
         <div class="product-detail">
             <div class="media">
-                {% if product.image %}
-                <img src="{{ product.image.url }}" alt="{{ product.name }}" />
-                {% else %}
-                <img src="{% static 'img/placeholder.png' %}" alt="{{ product.name }}" />
-                {% endif %}
+                <div class="product-image-gallery">
+                    <div class="main-image">
+                        {% if product.image %}
+                        <img id="mainProductImage" src="{{ product.image.url }}" alt="{{ product.name }}" onclick="openImageModal()" />
+                        {% else %}
+                        <img id="mainProductImage" src="{% static 'img/placeholder.png' %}" alt="{{ product.name }}" />
+                        {% endif %}
+                    </div>
+                    
+                    <div class="image-thumbnails">
+                        {% if product.image %}
+                        <div class="thumbnail active" onclick="changeMainImage('{{ product.image.url }}', this)">
+                            <img src="{{ product.image.url }}" alt="{{ product.name }}" />
+                        </div>
+                        {% endif %}
+                        
+                        {% for img in product.images.all %}
+                        <div class="thumbnail" onclick="changeMainImage('{{ img.image.url }}', this)">
+                            <img src="{{ img.image.url }}" alt="{{ product.name }}" />
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
             </div>
 
             <div class="info">
                 <h1 class="product-title">{{ product.name }}</h1>
                 
-                <p class="product-price">{{ product.price|floatformat:0 }} ₫</p>
+                <p class="product-price">{{ product.price|intcomma }} ₫</p>
 
                 {% if product.short_description %}
                 <p class="product-short-desc">{{ product.short_description }}</p>
@@ -63,11 +82,10 @@
                     <form action="{% url 'cart_add' product.id %}" method="post" class="add-cart-form">
                         {% csrf_token %}
                         <div class="quantity-control">
-                            <label for="quantity">Số lượng:</label>
                             <div class="quantity-input-group">
                                 <button type="button" class="qty-btn qty-minus" onclick="decreaseQty()" {% if product.stock == 0 %}disabled{% endif %}>−</button>
                                 <input type="number" id="quantity" name="quantity" min="1" max="{{ product.stock }}" value="1" readonly {% if product.stock == 0 %}disabled{% endif %} />
-                                <button type="button" class="qty-btn qty-plus" onclick="increaseQty({{ product.stock|floatformat:0|safe }})" {% if product.stock == 0 %}disabled{% endif %}>+</button>
+                                <button type="button" class="qty-btn qty-plus" onclick="increaseQty({{ product.stock|intcomma|safe }})" {% if product.stock == 0 %}disabled{% endif %}>+</button>
                             </div>
                         </div>
                         <div class="action-buttons">
@@ -93,37 +111,40 @@
             </div>
         </section>
 
-        <!-- Description -->
-        {% if product.description %}
-        <section class="section-card card">
-            <h3 class="section-heading">Mô tả sản phẩm</h3>
-            <div class="product-description">
-                {{ product.description|linebreaks }}
-            </div>
-        </section>
-        {% endif %}
+        <!-- Description and Specs side by side -->
+        <div class="description-specs-container">
+            <!-- Specs -->
+            {% if product.specs %}
+            <section class="section-card card specs-section">
+                <h3 class="section-heading">Thông số kỹ thuật</h3>
+                <table class="specs-table">
+                    <tbody>
+                        {% for key, value in product.specs.items %}
+                        <tr>
+                            <td class="spec-label">{{ key }}</td>
+                            <td class="spec-value">{{ value }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </section>
+            {% endif %}
 
-        <!-- Specs -->
-        {% if product.specs %}
-        <section class="section-card card specs-section">
-            <h3 class="section-heading">Thông số kỹ thuật</h3>
-            <table class="specs-table">
-                <tbody>
-                    {% for key, value in product.specs.items %}
-                    <tr>
-                        <td class="spec-label">{{ key }}</td>
-                        <td class="spec-value">{{ value }}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </section>
-        {% endif %}
+            <!-- Description -->
+            {% if product.description %}
+            <section class="section-card card">
+                <h3 class="section-heading">Mô tả sản phẩm</h3>
+                <div class="product-description">
+                    {{ product.description|linebreaks }}
+                </div>
+            </section>
+            {% endif %}
+        </div>
 
         <!-- Related Products -->
         {% if related_products %}
         <section class="related-products-section">
-            <h2 class="section-title">Sản phẩm liên quan</h2>
+            <h2 class="section-title home-section-title">Sản phẩm liên quan</h2>
             <div class="related-products-slider">
                 <button class="slider-nav prev" onclick="scrollRelatedProducts(-1)" aria-label="Trước">‹</button>
                 <div class="related-products-track" id="relatedProductsTrack">
@@ -138,7 +159,7 @@
                         </a>
                         <div class="product-info-centered">
                             <h3 class="product-name"><a href="{% url 'product_detail' p.slug %}">{{ p.name }}</a></h3>
-                            <p class="price">{{ p.price|floatformat:0 }} ₫</p>
+                            <p class="price">{{ p.price|intcomma }} ₫</p>
                             <form action="{% url 'cart_add' p.id %}" method="post" class="related-add-form">
                                 {% csrf_token %}
                                 <input type="hidden" name="quantity" value="1" />
@@ -162,10 +183,53 @@
 
     {% include 'store/partials/footer.html' %}
     
+    <!-- Image Modal -->
+    <div id="imageModal" class="image-modal" onclick="closeImageModal()">
+        <span class="modal-close">&times;</span>
+        <img class="modal-content" id="modalImage">
+        <div class="modal-caption" id="modalCaption"></div>
+    </div>
+    
     <button id="backToTop" class="back-to-top" aria-label="Lên đầu trang">↑</button>
     
     <script src="{% static 'js/app.js' %}"></script>
     <script>
+        // Image gallery functions
+        function changeMainImage(imageSrc, thumbnailElement) {
+            const mainImage = document.getElementById('mainProductImage');
+            mainImage.src = imageSrc;
+            
+            // Remove active class from all thumbnails
+            document.querySelectorAll('.thumbnail').forEach(thumb => {
+                thumb.classList.remove('active');
+            });
+            
+            // Add active class to clicked thumbnail
+            thumbnailElement.classList.add('active');
+        }
+        
+        function openImageModal() {
+            const mainImage = document.getElementById('mainProductImage');
+            const modal = document.getElementById('imageModal');
+            const modalImg = document.getElementById('modalImage');
+            modal.style.display = 'flex';
+            modalImg.src = mainImage.src;
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function closeImageModal() {
+            const modal = document.getElementById('imageModal');
+            modal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+        
+        // Close modal with Escape key
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                closeImageModal();
+            }
+        });
+        
         // Quantity control functions
         function decreaseQty() {
             const input = document.getElementById('quantity');

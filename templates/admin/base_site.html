@@ -10,3 +10,5 @@
     {{ block.super }}
     <script src="{% static 'admin/js/custom_admin.js' %}"></script>
 {% endblock %}
+
+{% block bodyclass %}{{ block.super }} admin-page{% endblock %}

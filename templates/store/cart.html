@@ -1,4 +1,5 @@
 {% load static %}
+{% load custom_filters %}
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -42,10 +43,10 @@
                             </span>
                         </td>
                         <td class="text-right price-cell">
-                            {{ item.price|floatformat:0 }} ₫
+                            {{ item.price|intcomma }} ₫
                         </td>
                         <td class="text-right price-cell price-total">
-                            {{ item.total|floatformat:0 }} ₫
+                            {{ item.total|intcomma }} ₫
                         </td>
                         <td class="text-center">
                             <form method="post" action="{% url 'cart_remove' item.product.id %}" class="inline-form">
@@ -62,7 +63,7 @@
                 <div class="cart-total-row">
                     <span class="total-label">Tổng cộng:</span>
                     <span class="total-amount">
-                        {{ cart.total_amount|floatformat:0 }} ₫
+                        {{ cart.total_amount|intcomma }} ₫
                     </span>
                 </div>
                 

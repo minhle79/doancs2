@@ -1,0 +1,533 @@
+/* Dark Mode Admin CSS for ComputerStore Admin */
+/* Scoped to admin pages only to avoid conflicts with frontend CSS */
+
+/* Force dark mode for admin only */
+body.admin-page {
+    color-scheme: dark;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    background: #1a1a1a !important;
+    color: #e0e0e0 !important;
+}
+
+/* Admin container scoping */
+#content, #content-main, .module, .colM, .colSM, .colMS {
+    color-scheme: dark;
+}
+
+/* Header */
+#header {
+    background: #0d0d0d !important;
+    color: #e0e0e0 !important;
+    border-bottom: 1px solid #333 !important;
+}
+
+#branding h1, #branding h1 a, #branding h1 a:visited {
+    color: #e0e0e0 !important;
+}
+
+#user-tools a {
+    color: #e0e0e0 !important;
+}
+
+#user-tools a:hover {
+    color: #fff !important;
+}
+
+/* Breadcrumbs */
+.breadcrumbs {
+    background: #252525 !important;
+    color: #e0e0e0 !important;
+    border-bottom: 1px solid #333 !important;
+}
+
+.breadcrumbs a {
+    color: #4a9eff !important;
+}
+
+.breadcrumbs a:hover {
+    color: #6bb3ff !important;
+}
+
+/* Content area */
+#content {
+    background: #1a1a1a !important;
+}
+
+#content-main {
+    background: transparent !important;
+}
+
+.change-form {
+    background: transparent !important;
+}
+
+/* Module/Fieldset */
+.module {
+    background: #252525 !important;
+    color: #e0e0e0 !important;
+    border: 1px solid #333 !important;
+}
+
+.module h2, .module h3 {
+    background: #2d2d2d !important;
+    color: #e0e0e0 !important;
+    border-bottom: 1px solid #333 !important;
+}
+
+/* Force dark mode for all elements */
+@media (prefers-color-scheme: light) {
+    body {
+        background: #1a1a1a !important;
+        color: #e0e0e0 !important;
+    }
+    
+    #header {
+        background: #0d0d0d !important;
+        color: #e0e0e0 !important;
+    }
+    
+    #branding h1, #branding h1 a, #branding h1 a:visited {
+        color: #e0e0e0 !important;
+    }
+    
+    #user-tools a {
+        color: #e0e0e0 !important;
+    }
+    
+    .module {
+        background: #252525 !important;
+        color: #e0e0e0 !important;
+    }
+    
+    input, select, textarea {
+        background: #2d2d2d !important;
+        color: #e0e0e0 !important;
+        border-color: #444 !important;
+    }
+    
+    table {
+        background: #252525 !important;
+        color: #e0e0e0 !important;
+    }
+    
+    th, td {
+        color: #e0e0e0 !important;
+    }
+    
+    .breadcrumbs {
+        background: #252525 !important;
+        color: #e0e0e0 !important;
+        border-bottom: 1px solid #333 !important;
+    }
+    
+    .breadcrumbs a {
+        color: #4a9eff !important;
+    }
+}
+
+/* Enhanced Table Styling */
+#result_list {
+    background: #252525 !important;
+}
+
+#result_list tbody tr {
+    background: #252525 !important;
+}
+
+#result_list tbody tr:hover {
+    background-color: #2d2d2d !important;
+}
+
+#result_list th {
+    background: #1a1a1a !important;
+    color: #e0e0e0 !important;
+    font-weight: 500;
+    padding: 10px;
+    border: 1px solid #333;
+}
+
+#result_list td {
+    padding: 10px;
+    border-bottom: 1px solid #333;
+    background: #252525 !important;
+    color: #e0e0e0 !important;
+}
+
+/* Filter Panel */
+#changelist-filter {
+    background: #252525 !important;
+    padding: 15px;
+    border: 1px solid #333;
+    color: #e0e0e0 !important;
+}
+
+#changelist-filter h2 {
+    background: #1a1a1a !important;
+    color: #e0e0e0 !important;
+    padding: 10px;
+    margin: -15px -15px 10px -15px;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+#changelist-filter h3 {
+    color: #e0e0e0 !important;
+}
+
+#changelist-filter li {
+    background: transparent !important;
+}
+
+#changelist-filter li a {
+    color: #4a9eff !important;
+}
+
+#changelist-filter li.selected {
+    background: #2d2d2d !important;
+}
+
+#changelist-filter li.selected a {
+    font-weight: 600;
+    color: #6bb3ff !important;
+}
+
+/* Action Bar */
+.actions {
+    background: #252525 !important;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #333;
+}
+
+.actions label, .actions select, .actions button, .actions span {
+    color: #e0e0e0 !important;
+}
+
+.actions select {
+    background: #2d2d2d !important;
+    color: #e0e0e0 !important;
+    border: 1px solid #444 !important;
+}
+
+/* Search Bar */
+#changelist-search {
+    margin-bottom: 10px;
+}
+
+#changelist-search label {
+    color: #e0e0e0 !important;
+}
+
+#searchbar {
+    border: 1px solid #444 !important;
+    padding: 8px 10px;
+    font-size: 14px;
+    width: 100%;
+    background: #2d2d2d !important;
+    color: #e0e0e0 !important;
+}
+
+#searchbar:focus {
+    border-color: #4a9eff !important;
+    outline: none;
+}
+
+#searchbar::placeholder {
+    color: #888 !important;
+}
+
+/* Pagination */
+.paginator {
+    padding: 10px;
+    margin-top: 15px;
+    background: #252525 !important;
+    color: #e0e0e0 !important;
+}
+
+.paginator a {
+    padding: 5px 10px;
+    margin: 0 2px;
+    text-decoration: none;
+    color: #4a9eff !important;
+}
+
+.paginator a:hover {
+    background: #2d2d2d;
+}
+
+.paginator .this-page {
+    background: #1a1a1a !important;
+    color: #e0e0e0 !important;
+    padding: 5px 10px;
+    margin: 0 2px;
+}
+
+/* Form Fields */
+.form-row label {
+    color: #e0e0e0 !important;
+}
+
+.form-row input[type="text"],
+.form-row input[type="email"],
+.form-row input[type="number"],
+.form-row input[type="url"],
+.form-row input[type="password"],
+.form-row input[type="date"],
+.form-row select,
+.form-row textarea {
+    border: 1px solid #444 !important;
+    padding: 6px 8px;
+    background: #2d2d2d !important;
+    color: #e0e0e0 !important;
+}
+
+.form-row input:focus,
+.form-row select:focus,
+.form-row textarea:focus {
+    border-color: #4a9eff !important;
+    outline: none;
+}
+
+.form-row input::placeholder,
+.form-row textarea::placeholder {
+    color: #888 !important;
+}
+
+.form-row .help {
+    color: #aaa !important;
+}
+
+.form-row .readonly {
+    color: #aaa !important;
+}
+
+/* Buttons */
+.submit-row {
+    background: #252525 !important;
+    border-top: 1px solid #333 !important;
+}
+
+.submit-row input[type="submit"],
+.button,
+input[type="button"],
+input[type="submit"] {
+    background: #1a73e8 !important;
+    border: none !important;
+    color: white !important;
+    padding: 8px 16px;
+    cursor: pointer;
+    font-size: 13px;
+}
+
+.submit-row input[type="submit"]:hover,
+.button:hover,
+input[type="button"]:hover,
+input[type="submit"]:hover {
+    background: #1557b0 !important;
+}
+
+.deletelink, .deletelink-box a {
+    background: #d93025 !important;
+}
+
+.deletelink:hover, .deletelink-box a:hover {
+    background: #b31412 !important;
+}
+
+a.button {
+    color: white !important;
+}
+
+/* Messages */
+.messagelist {
+    background: transparent !important;
+}
+
+.messagelist li {
+    padding: 10px 15px;
+    margin: 10px 0;
+    border-left: 3px solid #4a4a4a;
+    background: #252525 !important;
+}
+
+.messagelist .success {
+    background: #1a3a1a !important;
+    border-left-color: #4caf50 !important;
+    color: #81c784 !important;
+}
+
+.messagelist .warning {
+    background: #3a3a1a !important;
+    border-left-color: #ff9800 !important;
+    color: #ffb74d !important;
+}
+
+.messagelist .error {
+    background: #3a1a1a !important;
+    border-left-color: #f44336 !important;
+    color: #e57373 !important;
+}
+
+.messagelist .info {
+    background: #1a2a3a !important;
+    border-left-color: #2196f3 !important;
+    color: #64b5f6 !important;
+}
+
+/* Back to Top Button */
+#back-to-top {
+    display: none;
+}
+
+/* Required Fields Indicator */
+.required:after {
+    content: " *";
+    color: #ba2121;
+    font-weight: bold;
+}
+
+/* Inline Tables */
+.inline-group {
+    background: #252525 !important;
+    padding: 15px;
+    margin: 15px 0;
+    border: 1px solid #333;
+}
+
+.inline-group h2 {
+    background: #1a1a1a !important;
+    color: #e0e0e0 !important;
+    padding: 8px 10px;
+    margin: -15px -15px 10px -15px;
+    font-size: 13px;
+}
+
+.inline-group table {
+    background: #252525 !important;
+}
+
+.inline-group th, .inline-group td {
+    color: #e0e0e0 !important;
+    border-color: #333 !important;
+}
+
+/* Fieldset Styling */
+.module {
+    background: #252525 !important;
+    margin-bottom: 15px;
+    border: 1px solid #333;
+}
+
+.module h2 {
+    background: #2d2d2d !important;
+    color: #e0e0e0 !important;
+    padding: 8px 10px;
+    font-weight: 600;
+    font-size: 13px;
+    border-bottom: 1px solid #333;
+}
+
+.module h3 {
+    color: #e0e0e0 !important;
+}
+
+/* Collapse Fieldsets */
+.collapse {
+    border: 1px solid #333;
+}
+
+.collapse h2 {
+    cursor: pointer;
+}
+
+.collapse h2:hover {
+    background: #333 !important;
+}
+
+/* Content area */
+#content {
+    background: #1a1a1a !important;
+}
+
+/* Change form */
+.change-form {
+    background: transparent !important;
+}
+
+/* All links */
+a {
+    color: #4a9eff !important;
+}
+
+a:hover {
+    color: #6bb3ff !important;
+}
+
+/* Sidebar */
+#content-main {
+    background: transparent !important;
+}
+
+/* Dashboard */
+.dashboard #content {
+    background: #1a1a1a !important;
+}
+
+/* Object tools */
+.object-tools {
+    background: transparent !important;
+}
+
+.object-tools a {
+    background: #1a73e8 !important;
+    color: white !important;
+}
+
+.object-tools a:hover {
+    background: #1557b0 !important;
+}
+
+/* Errors */
+.errors, .errorlist {
+    background: #3a1a1a !important;
+    color: #e57373 !important;
+}
+
+/* Calendar widget */
+.calendarbox, .clockbox {
+    background: #252525 !important;
+    border: 1px solid #333 !important;
+}
+
+.calendarbox h2 {
+    background: #1a1a1a !important;
+    color: #e0e0e0 !important;
+}
+
+.calendarbox th {
+    background: #2d2d2d !important;
+    color: #e0e0e0 !important;
+}
+
+.calendarbox td {
+    background: #252525 !important;
+    color: #e0e0e0 !important;
+}
+
+.calendarbox td a {
+    color: #4a9eff !important;
+}
+
+.calendarbox td a:hover {
+    background: #2d2d2d !important;
+}
+
+/* Help text */
+.help, p.help {
+    color: #aaa !important;
+}
+
+/* Checkbox and radio */
+input[type="checkbox"], input[type="radio"] {
+    filter: invert(1) hue-rotate(180deg);
+}

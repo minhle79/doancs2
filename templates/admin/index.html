@@ -1,110 +1,95 @@
 {% extends "admin/base_site.html" %}
-{% load i18n static %}
+{% load static %}
 
 {% block extrastyle %}
-{# Override to prevent custom_admin.css from loading #}
-<link rel="stylesheet" href="{% static 'admin/css/dashboard.css' %}">
+    {{ block.super }}
+    <link rel="stylesheet" href="{% static 'admin/css/dashboard.css' %}">
 {% endblock %}
 
 {% block extrahead %}
-{{ block.super }}
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    {{ block.super }}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 {% endblock %}
 
 {% block content %}
 <div class="dashboard-container">
-    <!-- Header Welcome -->
+    <!-- Header -->
     <div class="dashboard-header">
         <div class="welcome-section">
-            <h1 class="dashboard-title">Tổng quan cửa hàng</h1>
-            <p class="dashboard-subtitle">Chào mừng trở lại, {{ user.get_username }}! Đây là thống kê hoạt động hôm nay.</p>
+            <h1 class="dashboard-title">Dashboard Tổng Quan</h1>
+            <p class="dashboard-subtitle">Xin chào, {{ user.get_username }}! Đây là bảng điều khiển của bạn.</p>
         </div>
         <div class="header-actions">
             <button class="btn-refresh" onclick="location.reload()">
-                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
-                </svg>
-                Làm mới
+                <span>🔄</span>
+                <span>Làm mới</span>
             </button>
         </div>
     </div>
 
-    <!-- Statistics Cards -->
+    <!-- Stats Grid -->
     <div class="stats-grid">
         <div class="stat-card card-primary">
             <div class="stat-icon">
-                <svg width="32" height="32" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
-                </svg>
+                <span style="font-size: 24px;">📦</span>
             </div>
             <div class="stat-content">
-                <h3 class="stat-label">Tổng sản phẩm</h3>
-                <p class="stat-value" id="total-products">{{ total_products }}</p>
-                <span class="stat-change positive">+{{ new_products_week }} tuần này</span>
+                <p class="stat-label">Tổng sản phẩm</p>
+                <h2 class="stat-value">{{ total_products|default:0 }}</h2>
+                <span class="stat-change neutral">{{ new_products_week|default:0 }} sản phẩm mới tuần này</span>
             </div>
         </div>
 
         <div class="stat-card card-success">
             <div class="stat-icon">
-                <svg width="32" height="32" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                </svg>
+                <span style="font-size: 24px;">✅</span>
             </div>
             <div class="stat-content">
-                <h3 class="stat-label">Sản phẩm còn hàng</h3>
-                <p class="stat-value" id="in-stock">{{ in_stock_products }}</p>
-                <span class="stat-change neutral">{{ stock_percent }}% tồn kho</span>
+                <p class="stat-label">Sản phẩm còn hàng</p>
+                <h2 class="stat-value">{{ in_stock_products|default:0 }}</h2>
+                <span class="stat-change positive">{{ stock_percent|default:0 }}% tổng sản phẩm</span>
             </div>
         </div>
 
         <div class="stat-card card-warning">
             <div class="stat-icon">
-                <svg width="32" height="32" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                </svg>
+                <span style="font-size: 24px;">⚠️</span>
             </div>
             <div class="stat-content">
-                <h3 class="stat-label">Sắp hết hàng</h3>
-                <p class="stat-value" id="low-stock">{{ low_stock_count }}</p>
-                <span class="stat-change warning">Cần nhập thêm</span>
+                <p class="stat-label">Sản phẩm sắp hết</p>
+                <h2 class="stat-value">{{ low_stock_products|default:0 }}</h2>
+                <span class="stat-change warning">Cần nhập hàng</span>
             </div>
         </div>
 
         <div class="stat-card card-info">
             <div class="stat-icon">
-                <svg width="32" height="32" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
-                </svg>
+                <span style="font-size: 24px;">🛒</span>
             </div>
             <div class="stat-content">
-                <h3 class="stat-label">Đơn hàng</h3>
-                <p class="stat-value" id="total-orders">{{ total_orders }}</p>
-                <span class="stat-change positive">+{{ orders_today }} hôm nay</span>
+                <p class="stat-label">Tổng đơn hàng</p>
+                <h2 class="stat-value">{{ total_orders|default:0 }}</h2>
+                <span class="stat-change neutral">{{ orders_today|default:0 }} đơn hôm nay</span>
             </div>
         </div>
     </div>
 
-    <!-- Charts and Tables Row -->
-    <div class="dashboard-grid">
+    <!-- Charts & Content Grid -->
+    <div class="dashboard-grid grid-2-1">
         <!-- Revenue Chart -->
         <div class="dashboard-card chart-card">
             <div class="card-header">
-                <h2 class="card-title">Doanh thu 7 ngày gần đây</h2>
-                <select class="chart-period" onchange="updateChart(this.value)">
-                    <option value="7">7 ngày</option>
-                    <option value="30">30 ngày</option>
-                    <option value="90">90 ngày</option>
-                </select>
+                <h3 class="card-title">Doanh thu 7 ngày qua</h3>
             </div>
             <div class="card-body">
                 <canvas id="revenueChart" data-chart-data="{{ revenue_chart_data|escapejs }}"></canvas>
             </div>
         </div>
 
-        <!-- Product Distribution -->
+        <!-- Category Distribution Chart -->
         <div class="dashboard-card chart-card">
             <div class="card-header">
-                <h2 class="card-title">Phân bố theo danh mục</h2>
+                <h3 class="card-title">Phân bố danh mục</h3>
             </div>
             <div class="card-body">
                 <canvas id="categoryChart" data-chart-data="{{ category_chart_data|escapejs }}"></canvas>
@@ -112,15 +97,16 @@
         </div>
     </div>
 
-    <!-- Recent Orders and Quick Links -->
+    <!-- Recent Orders & Quick Actions -->
     <div class="dashboard-grid grid-2-1">
-        <!-- Recent Orders Table -->
+        <!-- Recent Orders -->
         <div class="dashboard-card">
             <div class="card-header">
-                <h2 class="card-title">Đơn hàng gần đây</h2>
+                <h3 class="card-title">Đơn hàng gần đây</h3>
                 <a href="{% url 'admin:store_order_changelist' %}" class="view-all-link">Xem tất cả →</a>
             </div>
             <div class="card-body no-padding">
+                {% if recent_orders %}
                 <div class="table-responsive">
                     <table class="data-table">
                         <thead>
@@ -128,8 +114,7 @@
                                 <th>Mã đơn</th>
                                 <th>Khách hàng</th>
                                 <th>Tổng tiền</th>
-                                <th>Trạng thái</th>
-                                <th>Ngày tạo</th>
+                                <th>Thời gian</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -140,78 +125,72 @@
                                         #{{ order.id }}
                                     </a>
                                 </td>
-                                <td>{{ order.full_name }}</td>
-                                <td class="amount">{{ order.total_amount|floatformat:0 }} ₫</td>
                                 <td>
-                                    <span class="status-badge status-completed">
-                                        Hoàn thành
-                                    </span>
+                                    {% if order.user %}
+                                        {{ order.user.username }}
+                                    {% else %}
+                                        {{ order.full_name|default:"Khách" }}
+                                    {% endif %}
                                 </td>
-                                <td class="date">{{ order.created_at|date:"d/m/Y H:i" }}</td>
-                            </tr>
-                            {% empty %}
-                            <tr>
-                                <td colspan="5" class="empty-state">Chưa có đơn hàng nào</td>
+                                <td class="amount">{{ order.total_price|floatformat:0 }} ₫</td>
+                                <td class="date">{{ order.created_at|timesince }} trước</td>
                             </tr>
                             {% endfor %}
                         </tbody>
                     </table>
                 </div>
+                {% else %}
+                <div class="empty-state">
+                    <p>Chưa có đơn hàng nào.</p>
+                </div>
+                {% endif %}
             </div>
         </div>
 
         <!-- Quick Actions -->
         <div class="dashboard-card">
             <div class="card-header">
-                <h2 class="card-title">Thao tác nhanh</h2>
+                <h3 class="card-title">Thao tác nhanh</h3>
             </div>
             <div class="card-body">
                 <div class="quick-actions">
                     <a href="{% url 'admin:store_product_add' %}" class="quick-action-btn">
                         <div class="action-icon bg-primary">
-                            <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-                            </svg>
+                            <span style="font-size: 24px;">➕</span>
                         </div>
                         <div class="action-text">
                             <strong>Thêm sản phẩm</strong>
-                            <span>Tạo sản phẩm mới</span>
+                            <span>Thêm sản phẩm mới vào kho</span>
                         </div>
                     </a>
 
                     <a href="{% url 'admin:store_order_changelist' %}" class="quick-action-btn">
                         <div class="action-icon bg-success">
-                            <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
-                            </svg>
+                            <span style="font-size: 24px;">📋</span>
                         </div>
                         <div class="action-text">
                             <strong>Quản lý đơn hàng</strong>
-                            <span>Xem và xử lý đơn</span>
+                            <span>Xem và xử lý đơn hàng</span>
                         </div>
                     </a>
 
                     <a href="{% url 'admin:store_category_changelist' %}" class="quick-action-btn">
                         <div class="action-icon bg-warning">
-                            <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
-                            </svg>
+                            <span style="font-size: 24px;">🏷️</span>
                         </div>
                         <div class="action-text">
-                            <strong>Danh mục</strong>
-                            <span>Quản lý phân loại</span>
+                            <strong>Quản lý danh mục</strong>
+                            <span>Chỉnh sửa danh mục sản phẩm</span>
                         </div>
                     </a>
 
                     <a href="{% url 'admin:store_brand_changelist' %}" class="quick-action-btn">
                         <div class="action-icon bg-info">
-                            <svg width="24" height="24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
-                            </svg>
+                            <span style="font-size: 24px;">🏢</span>
                         </div>
                         <div class="action-text">
-                            <strong>Thương hiệu</strong>
-                            <span>Quản lý nhãn hiệu</span>
+                            <strong>Quản lý thương hiệu</strong>
+                            <span>Quản lý các thương hiệu</span>
                         </div>
                     </a>
                 </div>
@@ -220,27 +199,29 @@
     </div>
 
     <!-- Low Stock Alert -->
-    {% if low_stock_products %}
-    <div class="dashboard-card alert-card">
-        <div class="card-header">
-            <h2 class="card-title">
-                <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="display: inline-block; vertical-align: middle; margin-right: 8px;">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
-                </svg>
-                Cảnh báo tồn kho thấp
-            </h2>
-        </div>
-        <div class="card-body">
-            <div class="low-stock-grid">
-                {% for product in low_stock_products %}
-                <div class="low-stock-item">
-                    <div class="product-info">
-                        <strong>{{ product.name }}</strong>
-                        <span class="stock-level">Còn {{ product.stock }} sản phẩm</span>
+    {% if low_stock_products_detail %}
+    <div style="padding: 0 32px; margin-bottom: 32px;">
+        <div class="dashboard-card alert-card">
+            <div class="card-header">
+                <h3 class="card-title">⚠️ Cảnh báo sản phẩm sắp hết hàng</h3>
+                <a href="{% url 'admin:store_product_changelist' %}?stock__lt=5&stock__gt=0" class="view-all-link">
+                    Xem tất cả →
+                </a>
+            </div>
+            <div class="card-body">
+                <div class="low-stock-grid">
+                    {% for product in low_stock_products_detail %}
+                    <div class="low-stock-item">
+                        <div class="product-info">
+                            <strong>{{ product.name }}</strong>
+                            <span class="stock-level">Còn lại: {{ product.stock }} sản phẩm</span>
+                        </div>
+                        <a href="{% url 'admin:store_product_change' product.id %}" class="btn-action-sm">
+                            Nhập hàng
+                        </a>
                     </div>
-                    <a href="{% url 'admin:store_product_change' product.id %}" class="btn-action-sm">Nhập hàng</a>
+                    {% endfor %}
                 </div>
-                {% endfor %}
             </div>
         </div>
     </div>

@@ -1,4 +1,5 @@
 {% load static %}
+{% load custom_filters %}
 <div class="modal-content">
   <div class="modal-header">
     <h3>Giỏ hàng của bạn</h3>
@@ -20,7 +21,7 @@
           <h4>
             <a href="{% url 'product_detail' item.product.slug %}">{{ item.product.name }}</a>
           </h4>
-          <p class="price">{{ item.price|floatformat:0 }} ₫</p>
+          <p class="price">{{ item.price|intcomma }} ₫</p>
           <p class="quantity">Số lượng: {{ item.quantity }}</p>
         </div>
         <div class="cart-actions">
@@ -43,7 +44,7 @@
   <div class="modal-footer">
     <div class="cart-total-row">
       <span>Tổng cộng:</span>
-      <span class="total-price">{{ cart.total_amount|floatformat:0 }} ₫</span>
+      <span class="total-price">{{ cart.total_amount|intcomma }} ₫</span>
     </div>
     <div class="cart-actions-footer">
       <a href="{% url 'cart_detail' %}" class="btn btn-view-cart">Xem giỏ hàng</a>

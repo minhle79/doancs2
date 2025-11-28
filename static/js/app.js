@@ -1,20 +1,43 @@
-// Dropdown categories
+// Dropdown categories and user menu
 document.querySelectorAll('.dropdown').forEach(dd => {
-  dd.addEventListener('mouseenter', () => dd.classList.add('open'));
-  dd.addEventListener('mouseleave', () => dd.classList.remove('open'));
+  // Delay close to avoid flicker when moving cursor from button to panel
+  let leaveTimer;
+  dd.addEventListener('mouseenter', () => {
+    if (leaveTimer) clearTimeout(leaveTimer);
+    dd.classList.add('open');
+  });
+  dd.addEventListener('mouseleave', () => {
+    leaveTimer = setTimeout(() => dd.classList.remove('open'), 180);
+  });
   // allow keyboard and click access to open/close dropdowns (useful on touch devices)
-  const trigger = dd.querySelector('.btn');
+  const trigger = dd.querySelector('.btn') || dd.querySelector('.user-menu-btn');
   if (trigger) {
     trigger.addEventListener('click', (e) => {
       e.preventDefault();
+      // Close other dropdowns first
+      document.querySelectorAll('.dropdown.open').forEach(other => {
+        if (other !== dd) other.classList.remove('open');
+      });
       dd.classList.toggle('open');
     });
   }
   dd.addEventListener('focusin', () => dd.classList.add('open'));
   dd.addEventListener('focusout', (e) => {
     // close when focus moves outside the dropdown element
-    if (!dd.contains(e.relatedTarget)) dd.classList.remove('open');
+    if (!dd.contains(e.relatedTarget)) {
+      // small delay to mirror mouse behavior
+      setTimeout(() => dd.classList.remove('open'), 120);
+    }
   });
+});
+
+// Close dropdowns when clicking outside
+document.addEventListener('click', (e) => {
+  if (!e.target.closest('.dropdown')) {
+    document.querySelectorAll('.dropdown.open').forEach(dd => {
+      dd.classList.remove('open');
+    });
+  }
 });
 
 // Initialize carousels / slider-navs

@@ -1,13 +1,17 @@
 from django.db import models
+from django.utils import timezone
 
 
 class Category(models.Model):
     name = models.CharField(max_length=100, unique=True)
     slug = models.SlugField(max_length=120, unique=True)
+    created_at = models.DateTimeField(default=timezone.now)
+    updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         verbose_name = "Danh mục"
         verbose_name_plural = "Danh mục"
+        ordering = ['name']
 
     def __str__(self) -> str:
         return self.name
@@ -16,10 +20,13 @@ class Category(models.Model):
 class Brand(models.Model):
     name = models.CharField(max_length=120, unique=True)
     slug = models.SlugField(max_length=140, unique=True)
+    created_at = models.DateTimeField(default=timezone.now)
+    updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         verbose_name = "Hãng"
         verbose_name_plural = "Hãng"
+        ordering = ['name']
 
     def __str__(self) -> str:
         return self.name
@@ -53,6 +60,21 @@ class Product(models.Model):
 
     def __str__(self) -> str:
         return self.name
+
+
+class ProductImage(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="images")
+    image = models.ImageField(upload_to="products/")
+    order = models.PositiveIntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['order', 'created_at']
+        verbose_name = "Ảnh sản phẩm"
+        verbose_name_plural = "Ảnh sản phẩm"
+
+    def __str__(self) -> str:
+        return f"{self.product.name} - Image {self.order}"
 
 
 class Order(models.Model):

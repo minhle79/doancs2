@@ -24,3 +24,19 @@ class CheckoutForm(forms.ModelForm):
         fields = ["full_name", "email", "phone", "address", "note"]
 
 
+class ProfileForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ["first_name", "last_name", "email"]
+        labels = {
+            "first_name": "Họ",
+            "last_name": "Tên",
+            "email": "Email",
+        }
+        widgets = {
+            "first_name": forms.TextInput(attrs={"placeholder": "Nhập họ"}),
+            "last_name": forms.TextInput(attrs={"placeholder": "Nhập tên"}),
+            "email": forms.EmailInput(attrs={"placeholder": "name@example.com"}),
+        }
+
+

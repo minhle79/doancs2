@@ -1,4 +1,5 @@
 {% load static %}
+{% load custom_filters %}
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -38,15 +39,25 @@
                 </div>
                 <div class="hero-image">
                     <div class="floating-card card-1">
-                        <div class="card-icon">💻</div>
+                        <div class="card-icon">
+                            <svg height="32px" width="32px" version="1.1" id="_x32_" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 512 512" xml:space="preserve" fill="#000000"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <style type="text/css"> .st0{fill:#ece9e9;} </style> <g> <path class="st0" d="M510.163,392.022l-45.59-57.326V93.611c0-11.662-9.458-21.12-21.12-21.12H68.546 c-11.662,0-21.115,9.458-21.115,21.12v241.085L1.837,392.022C0.648,393.517,0,395.367,0,397.287v25.373 c0,9.311,7.542,16.849,16.849,16.849h478.302c9.307,0,16.849-7.538,16.849-16.849v-25.373 C512,395.367,511.356,393.517,510.163,392.022z M77.226,102.291h357.548v202.606H77.226V102.291z M304.121,419.47h-96.242v-25.478 h96.242V419.47z"></path> </g> </g></svg>
+                        </div>
                         <div class="card-text">Laptop Gaming</div>
                     </div>
                     <div class="floating-card card-2">
-                        <div class="card-icon">🖥️🖥</div>
+                        <div class="card-icon">
+                            <svg height="32px" width="32px" viewBox="0 0 24 24" id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" fill="#000000"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"><defs><style>.cls-1{fill:none;stroke:#eeecec;stroke-miterlimit:10;stroke-width:1.91px;}.cls-2{fill:#e9e6e6;}</style></defs><rect class="cls-1" x="4.36" y="1.5" width="15.27" height="21" rx="1.91"></rect><rect class="cls-1" x="8.18" y="5.32" width="7.64" height="3.82"></rect><circle class="cls-2" cx="12" cy="18.68" r="0.95"></circle><line class="cls-1" x1="8.18" y1="12.95" x2="15.82" y2="12.95"></line></g></svg>
+                        </div>
                         <div class="card-text">PC Workstation</div>
                     </div>
                     <div class="floating-card card-3">
-                        <div class="card-icon">⚙️</div>
+                        <div class="card-icon">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                                <line x1="8" y1="21" x2="16" y2="21"></line>
+                                <line x1="12" y1="17" x2="12" y2="21"></line>
+                            </svg>
+                        </div>
                         <div class="card-text">Linh kiện</div>
                     </div>
                 </div>
@@ -60,7 +71,7 @@
 
         <!-- Featured Products -->
         {% if featured %}
-        <h2 class="section-title">Sản phẩm nổi bật</h2>
+        <h2 class="section-title home-section-title">Sản phẩm nổi bật</h2>
         <section class="banner card">
             <button class="slider-nav prev" aria-label="Trước">‹</button>
             <div class="slider-track slider-wrapper">
@@ -72,11 +83,15 @@
                         {% else %}
                         <img src="{% static 'img/placeholder.png' %}" alt="{{ p.name }}" loading="lazy" />
                         {% endif %}
-                        <div class="product-badge featured">⭐</div>
+                        <div class="product-badge featured">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                            </svg>
+                        </div>
                         <h3>{{ p.name }}</h3>
                     </a>
                     <div class="product-footer">
-                        <p class="price">{{ p.price|floatformat:0 }} ₫</p>
+                        <p class="price">{{ p.price|intcomma }} ₫</p>
                         {% if p.stock > 0 %}
                         <span class="stock-badge in-stock">Còn hàng</span>
                         {% else %}
@@ -92,7 +107,7 @@
 
         <!-- Deal Products -->
         {% if deals %}
-        <h2 class="section-title">Ưu đãi đặc biệt</h2>
+        <h2 class="section-title home-section-title">Ưu đãi đặc biệt</h2>
         <section class="banner card">
             <button class="slider-nav prev" aria-label="Trước">‹</button>
             <div class="slider-track slider-wrapper">
@@ -104,11 +119,13 @@
                         {% else %}
                         <img src="{% static 'img/placeholder.png' %}" alt="{{ p.name }}" loading="lazy" />
                         {% endif %}
-                        <div class="product-badge deal">🔥</div>
+                        <div class="product-badge deal">
+                            <svg height="16px" width="16px" fill="#000000" viewBox="0 0 24 24" id="lightning" data-name="Line Color" xmlns="http://www.w3.org/2000/svg" class="icon line-color"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"><polygon id="primary" points="7 12 12 14 11 21 17 12 13 10 14 3 7 12" style="fill: none; stroke: #e2cd6d; stroke-linecap: round; stroke-linejoin: round; stroke-width: 2;"></polygon></g></svg>
+                        </div>
                         <h3>{{ p.name }}</h3>
                     </a>
                     <div class="product-footer">
-                        <p class="price">{{ p.price|floatformat:0 }} ₫</p>
+                        <p class="price">{{ p.price|intcomma }} ₫</p>
                         {% if p.stock > 0 %}
                         <span class="stock-badge in-stock">Còn hàng</span>
                         {% else %}
@@ -124,7 +141,7 @@
 
         <!-- Hot Products -->
         {% if hot %}
-        <h2 class="section-title">Sản phẩm Hot</h2>
+        <h2 class="section-title home-section-title">Sản phẩm Hot</h2>
         <section class="banner card">
             <button class="slider-nav prev" aria-label="Trước">‹</button>
             <div class="slider-track slider-wrapper">
@@ -136,11 +153,13 @@
                         {% else %}
                         <img src="{% static 'img/placeholder.png' %}" alt="{{ p.name }}" loading="lazy" />
                         {% endif %}
-                        <div class="product-badge hot">⚡</div>
+                        <div class="product-badge hot">
+                            <svg height="16px" width="16px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"><path d="M5.926 20.574a7.26 7.26 0 0 0 3.039 1.511c.107.035.179-.105.107-.175-2.395-2.285-1.079-4.758-.107-5.873.693-.796 1.68-2.107 1.608-3.865 0-.176.18-.317.322-.211 1.359.703 2.288 2.25 2.538 3.515.394-.386.537-.984.537-1.511 0-.176.214-.317.393-.176 1.287 1.16 3.503 5.097-.072 8.19-.071.071 0 .212.072.177a8.761 8.761 0 0 0 3.003-1.442c5.827-4.5 2.037-12.48-.43-15.116-.321-.317-.893-.106-.893.351-.036.95-.322 2.004-1.072 2.707-.572-2.39-2.478-5.105-5.195-6.441-.357-.176-.786.105-.75.492.07 3.27-2.063 5.352-3.922 8.059-1.645 2.425-2.717 6.89.822 9.808z" fill="#d7582d"></path></g></svg>
+                        </div>
                         <h3>{{ p.name }}</h3>
                     </a>
                     <div class="product-footer">
-                        <p class="price">{{ p.price|floatformat:0 }} ₫</p>
+                        <p class="price">{{ p.price|intcomma }} ₫</p>
                         {% if p.stock > 0 %}
                         <span class="stock-badge in-stock">Còn hàng</span>
                         {% else %}
@@ -155,7 +174,7 @@
         {% endif %}
 
         <!-- Categories -->
-        <h2 class="section-title">Danh mục sản phẩm</h2>
+        <h2 class="section-title home-section-title">Danh mục sản phẩm</h2>
         <section class="cats-grid">
             {% for c in categories %}
             <a class="cat" href="{% url 'products' %}?category={{ c.slug }}">
