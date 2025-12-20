@@ -78,6 +78,15 @@ class ProductImage(models.Model):
 
 
 class Order(models.Model):
+    STATUS_CHOICES = [
+        ('pending', 'Chờ xử lý'),
+        ('confirmed', 'Đã xác nhận'),
+        ('processing', 'Đang xử lý'),
+        ('shipped', 'Đang giao hàng'),
+        ('delivered', 'Đã giao hàng'),
+        ('cancelled', 'Đã hủy'),
+    ]
+
     user = models.ForeignKey("auth.User", on_delete=models.SET_NULL, null=True, blank=True, db_index=True)
     full_name = models.CharField(max_length=200, db_index=True)
     email = models.EmailField(db_index=True)
@@ -85,6 +94,13 @@ class Order(models.Model):
     address = models.CharField(max_length=300)
     note = models.CharField(max_length=400, blank=True)
     total_amount = models.DecimalField(max_digits=12, decimal_places=2, db_index=True)
+    status = models.CharField(
+        max_length=20,
+        choices=STATUS_CHOICES,
+        default='pending',
+        db_index=True,
+        verbose_name='Trạng thái'
+    )
     created_at = models.DateTimeField(auto_now_add=True, db_index=True)
 
     class Meta:
@@ -94,10 +110,24 @@ class Order(models.Model):
         indexes = [
             models.Index(fields=['-created_at', 'user']),
             models.Index(fields=['email', 'phone']),
+            models.Index(fields=['status', '-created_at']),
         ]
 
     def __str__(self) -> str:
         return f"Order #{self.id} - {self.full_name}"
+
+    def get_status_display_badge(self):
+        """Trả về badge HTML cho status"""
+        status_colors = {
+            'pending': '#f59e0b',
+            'confirmed': '#3b82f6',
+            'processing': '#8b5cf6',
+            'shipped': '#06b6d4',
+            'delivered': '#10b981',
+            'cancelled': '#ef4444',
+        }
+        color = status_colors.get(self.status, '#6b7280')
+        return color
 
 
 class OrderItem(models.Model):

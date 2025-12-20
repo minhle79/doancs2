@@ -1,0 +1,172 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static %}
+
+{% block extrahead %}
+    {{ block.super }}
+    <style>
+        #content { background: #121220 !important; padding: 0 !important; }
+        
+        .app-wrap { background: #121220; min-height: 100vh; padding: 30px 40px; }
+        
+        .app-head { 
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #2d2d4a;
+        }
+        .app-head h1 { 
+            font-size: 28px; font-weight: 700; margin: 0 0 8px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+        }
+        .app-head .breadcrumbs { 
+            font-size: 14px; color: #94a3b8; 
+            background: transparent !important; border: none !important; padding: 0 !important;
+        }
+        .app-head .breadcrumbs a { color: #667eea !important; text-decoration: none; }
+        .app-head .breadcrumbs a:hover { color: #818cf8 !important; }
+        
+        .model-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 24px;
+        }
+        
+        .model-card {
+            background: linear-gradient(145deg, #1e1e30 0%, #252542 100%);
+            border: 1px solid #2d2d4a;
+            border-radius: 16px;
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+        .model-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+            border-color: #667eea;
+        }
+        
+        .model-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid #2d2d4a;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+        .model-icon {
+            width: 48px; height: 48px;
+            border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 24px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .model-name {
+            font-size: 18px; font-weight: 600; color: #fff;
+            margin: 0;
+        }
+        .model-name a { color: #fff !important; text-decoration: none !important; }
+        .model-name a:hover { color: #667eea !important; }
+        
+        .model-actions {
+            padding: 16px 24px;
+            display: flex;
+            gap: 12px;
+        }
+        .model-actions a {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px 16px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 500;
+            text-decoration: none !important;
+            transition: all 0.2s;
+        }
+        .btn-view {
+            background: rgba(102, 126, 234, 0.15);
+            color: #667eea !important;
+            border: 1px solid rgba(102, 126, 234, 0.3);
+        }
+        .btn-view:hover {
+            background: rgba(102, 126, 234, 0.25);
+            border-color: #667eea;
+        }
+        .btn-add {
+            background: rgba(16, 185, 129, 0.15);
+            color: #10b981 !important;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+        .btn-add:hover {
+            background: rgba(16, 185, 129, 0.25);
+            border-color: #10b981;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #64748b;
+        }
+        .empty-state span { font-size: 64px; display: block; margin-bottom: 16px; opacity: 0.5; }
+        .empty-state p { font-size: 16px; margin: 0; }
+    </style>
+{% endblock %}
+
+{% block breadcrumbs %}{% endblock %}
+
+{% block content %}
+<div class="app-wrap">
+    <div class="app-head">
+        <div class="breadcrumbs">
+            <a href="{% url 'admin:index' %}">🏠 Trang chủ</a> › {{ app_label|capfirst }}
+        </div>
+        <h1>Quản lý {{ title }}</h1>
+    </div>
+    
+    {% if app_list %}
+        {% for app in app_list %}
+        <div class="model-grid">
+            {% for model in app.models %}
+            <div class="model-card">
+                <div class="model-header">
+                    <div class="model-icon">
+                        {% if model.object_name == 'Category' %}📂
+                        {% elif model.object_name == 'Brand' %}🏢
+                        {% elif model.object_name == 'Product' %}📦
+                        {% elif model.object_name == 'Order' %}🛒
+                        {% elif model.object_name == 'User' %}👤
+                        {% elif model.object_name == 'Group' %}👥
+                        {% else %}📋{% endif %}
+                    </div>
+                    <h3 class="model-name">
+                        {% if model.admin_url %}
+                            <a href="{{ model.admin_url }}">{{ model.name }}</a>
+                        {% else %}
+                            {{ model.name }}
+                        {% endif %}
+                    </h3>
+                </div>
+                <div class="model-actions">
+                    {% if model.admin_url %}
+                        <a href="{{ model.admin_url }}" class="btn-view">
+                            📋 Xem danh sách
+                        </a>
+                    {% endif %}
+                    {% if model.add_url %}
+                        <a href="{{ model.add_url }}" class="btn-add">
+                            ➕ Thêm mới
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endfor %}
+    {% else %}
+        <div class="empty-state">
+            <span>📭</span>
+            <p>Không có models nào trong app này.</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

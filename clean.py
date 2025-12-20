@@ -27,8 +27,8 @@ def clean_project():
     
     for pattern in patterns_to_delete:
         for path in project_root.glob(pattern):
-            # Bỏ qua .venv folder
-            if '.venv' in str(path) or 'venv' in str(path):
+            # Bỏ qua venv folder
+            if 'venv' in str(path):
                 continue
                 
             try:

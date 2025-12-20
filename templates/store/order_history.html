@@ -48,15 +48,17 @@
                         </div>
                         <div class="order-status status-{{ order.status }}">
                             {% if order.status == 'pending' %}
-                                Chờ xử lý
+                                ⏳ Chờ xử lý
+                            {% elif order.status == 'confirmed' %}
+                                ✅ Đã xác nhận
                             {% elif order.status == 'processing' %}
-                                Đang xử lý
+                                🔄 Đang xử lý
                             {% elif order.status == 'shipped' %}
-                                Đã giao
+                                🚚 Đang giao hàng
                             {% elif order.status == 'delivered' %}
-                                Hoàn thành
+                                📦 Đã giao hàng
                             {% elif order.status == 'cancelled' %}
-                                Đã hủy
+                                ❌ Đã hủy
                             {% endif %}
                         </div>
                     </div>

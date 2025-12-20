@@ -253,8 +253,8 @@ def api_products(request):
         "price",
         "stock",
         "short_description",
-        brand=F("brand__name"),
-        category=F("category__name"),
+        brand_name=F("brand__name"),
+        category_name=F("category__name"),
     )
     return JsonResponse({"products": list(products)})
 

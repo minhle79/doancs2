@@ -40,8 +40,24 @@ class ComputerStoreAdminSite(AdminSite):
         total_orders = Order.objects.count()
         orders_today = Order.objects.filter(created_at__gte=today_start).count()
         
+        # Tổng doanh thu
+        total_revenue = Order.objects.filter(
+            status__in=['confirmed', 'processing', 'shipped', 'delivered']
+        ).aggregate(total=Sum('total_amount'))['total'] or 0
+        
+        # Thống kê theo trạng thái đơn hàng
+        pending_orders = Order.objects.filter(status='pending').count()
+        processing_orders = Order.objects.filter(status__in=['confirmed', 'processing']).count()
+        shipped_orders = Order.objects.filter(status='shipped').count()
+        delivered_orders = Order.objects.filter(status='delivered').count()
+        
         extra_context['total_orders'] = total_orders
         extra_context['orders_today'] = orders_today
+        extra_context['total_revenue'] = total_revenue
+        extra_context['pending_orders'] = pending_orders
+        extra_context['processing_orders'] = processing_orders
+        extra_context['shipped_orders'] = shipped_orders
+        extra_context['delivered_orders'] = delivered_orders
         
         # Doanh thu 7 ngày qua (biểu đồ)
         revenue_data = []
@@ -54,12 +70,12 @@ class ComputerStoreAdminSite(AdminSite):
             day_revenue = Order.objects.filter(
                 created_at__gte=day_start,
                 created_at__lt=day_end
-            ).aggregate(total=Sum('total_price'))['total'] or 0
+            ).aggregate(total=Sum('total_amount'))['total'] or 0
             
             revenue_data.append(float(day_revenue))
             
             # Label theo thứ trong tuần
-            day_labels = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7']
+            day_labels = ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN']
             labels.append(day_labels[day.weekday()])
         
         extra_context['revenue_chart_data'] = json.dumps({
@@ -69,7 +85,7 @@ class ComputerStoreAdminSite(AdminSite):
         
         # Phân bố danh mục (biểu đồ)
         category_data = Category.objects.annotate(
-            product_count=Count('product')
+            product_count=Count('products')
         ).values('name', 'product_count').order_by('-product_count')[:5]
         
         cat_labels = [item['name'] for item in category_data]

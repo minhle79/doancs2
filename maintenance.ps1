@@ -8,7 +8,7 @@ param(
 )
 
 $ProjectRoot = $PSScriptRoot
-$VenvPath = Join-Path $ProjectRoot ".venv"
+$VenvPath = Join-Path $ProjectRoot "venv"
 $ActivateScript = Join-Path $VenvPath "Scripts\Activate.ps1"
 
 function Show-Help {

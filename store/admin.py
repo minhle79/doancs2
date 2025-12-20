@@ -7,16 +7,6 @@ from django import forms
 from django.forms import widgets
 import json
 from .models import Category, Brand, Product, Order, OrderItem, ProductImage
-from .admin_site import ComputerStoreAdminSite
-
-
-# Create custom admin site instance
-admin_site = ComputerStoreAdminSite(name='computerstore_admin')
-
-# Customize Admin Site Headers
-admin.site.site_header = "💻 ComputerStore Admin"
-admin.site.site_title = "ComputerStore Admin"
-admin.site.index_title = "Quản lý cửa hàng máy tính"
 
 
 class KeyValueWidget(widgets.Widget):
@@ -93,7 +83,9 @@ class CategoryAdmin(admin.ModelAdmin):
     product_count.short_description = "Số sản phẩm"
     
     def created_badge(self, obj):
-        return "Active"
+        return mark_safe(
+            '<span style="background:#10b981;color:#fff;padding:4px 10px;border-radius:12px;font-size:11px;font-weight:600;">✅ Active</span>'
+        )
     created_badge.short_description = "Trạng thái"
 
 
@@ -119,7 +111,9 @@ class BrandAdmin(admin.ModelAdmin):
     product_count.short_description = "Số sản phẩm"
     
     def status_badge(self, obj):
-        return "Active"
+        return mark_safe(
+            '<span style="background:#10b981;color:#fff;padding:4px 10px;border-radius:12px;font-size:11px;font-weight:600;">✅ Active</span>'
+        )
     status_badge.short_description = "Trạng thái"
 
 
@@ -233,29 +227,43 @@ class ProductAdmin(admin.ModelAdmin):
     image_preview_large.short_description = "Xem trước hình ảnh"
     
     def price_display(self, obj):
-        return f'{float(obj.price):,.0f} ₫'
+        formatted_price = '{:,.0f}'.format(float(obj.price))
+        return format_html(
+            '<span style="color:#10b981;font-weight:600;">{} ₫</span>',
+            formatted_price
+        )
     price_display.short_description = "Giá"
     price_display.admin_order_field = "price"
     
     def stock_status(self, obj):
         if obj.stock == 0:
-            return "Hết hàng"
+            return mark_safe(
+                '<span style="background:#ef4444;color:#fff;padding:4px 10px;border-radius:12px;font-size:11px;font-weight:600;">❌ Hết hàng</span>'
+            )
         elif obj.stock < 5:
-            return f"Sắp hết ({obj.stock})"
+            return format_html(
+                '<span style="background:#f59e0b;color:#fff;padding:4px 10px;border-radius:12px;font-size:11px;font-weight:600;">⚠️ Sắp hết ({})</span>',
+                obj.stock
+            )
         else:
-            return f"Còn hàng ({obj.stock})"
+            return format_html(
+                '<span style="background:#10b981;color:#fff;padding:4px 10px;border-radius:12px;font-size:11px;font-weight:600;">✅ Còn hàng ({})</span>',
+                obj.stock
+            )
     stock_status.short_description = "Tồn kho"
     stock_status.admin_order_field = "stock"
     
     def badges(self, obj):
-        badges = []
+        badges_html = []
         if obj.is_featured:
-            badges.append('Featured')
+            badges_html.append('<span style="background:#3b82f6;color:#fff;padding:3px 8px;border-radius:10px;font-size:10px;margin-right:4px;">⭐ Featured</span>')
         if obj.is_deal:
-            badges.append('Deal')
+            badges_html.append('<span style="background:#ef4444;color:#fff;padding:3px 8px;border-radius:10px;font-size:10px;margin-right:4px;">🔥 Deal</span>')
         if obj.is_hot:
-            badges.append('Hot')
-        return ', '.join(badges) if badges else "-"
+            badges_html.append('<span style="background:#f59e0b;color:#fff;padding:3px 8px;border-radius:10px;font-size:10px;margin-right:4px;">⚡ Hot</span>')
+        if badges_html:
+            return mark_safe(''.join(badges_html))
+        return mark_safe('<span style="color:#64748b;">-</span>')
     badges.short_description = "Nhãn"
     
     actions = [
@@ -340,22 +348,23 @@ class OrderAdmin(admin.ModelAdmin):
         "order_id_display", "full_name", "email", "phone", 
         "total_amount_display", "items_count", "status_badge", "created_at"
     )
-    list_filter = ("created_at",)
+    list_filter = ("status", "created_at")
     search_fields = ("id", "full_name", "email", "phone", "address")
     readonly_fields = (
         "user", "full_name", "email", "phone", "address", "note",
         "total_amount", "created_at", "order_summary"
     )
+    list_editable = ("status_badge",) if False else ()  # Remove this, status editable in detail
     inlines = [OrderItemInline]
     list_per_page = 25
     date_hierarchy = "created_at"
     list_select_related = ("user",)
     save_on_top = True
-    actions = ["export_orders_csv", "delete_selected_orders"]
+    actions = ["export_orders_csv", "delete_selected_orders", "mark_as_confirmed", "mark_as_shipped", "mark_as_delivered", "mark_as_cancelled"]
     
     fieldsets = (
         ("Thông tin đơn hàng", {
-            "fields": ("user", "created_at")
+            "fields": ("user", "status", "created_at")
         }),
         ("Thông tin khách hàng", {
             "fields": ("full_name", "email", "phone", "address", "note")
@@ -425,8 +434,52 @@ class OrderAdmin(admin.ModelAdmin):
     items_count.short_description = "Số SP"
     
     def status_badge(self, obj):
-        return "Hoàn thành"
+        status_colors = {
+            'pending': '#f59e0b',
+            'confirmed': '#3b82f6', 
+            'processing': '#8b5cf6',
+            'shipped': '#06b6d4',
+            'delivered': '#10b981',
+            'cancelled': '#ef4444',
+        }
+        status_icons = {
+            'pending': '⏳',
+            'confirmed': '✅',
+            'processing': '🔄',
+            'shipped': '🚚',
+            'delivered': '📦',
+            'cancelled': '❌',
+        }
+        color = status_colors.get(obj.status, '#6b7280')
+        icon = status_icons.get(obj.status, '📋')
+        label = obj.get_status_display()
+        return format_html(
+            '<span style="background: {}; color: white; padding: 4px 12px; '
+            'border-radius: 12px; font-size: 12px; font-weight: 500;">{} {}</span>',
+            color, icon, label
+        )
     status_badge.short_description = "Trạng thái"
+    status_badge.admin_order_field = "status"
+
+    def mark_as_confirmed(self, request, queryset):
+        updated = queryset.update(status='confirmed')
+        self.message_user(request, f'Đã cập nhật {updated} đơn hàng thành "Đã xác nhận"')
+    mark_as_confirmed.short_description = "✅ Đánh dấu đã xác nhận"
+
+    def mark_as_shipped(self, request, queryset):
+        updated = queryset.update(status='shipped')
+        self.message_user(request, f'Đã cập nhật {updated} đơn hàng thành "Đang giao hàng"')
+    mark_as_shipped.short_description = "🚚 Đánh dấu đang giao hàng"
+
+    def mark_as_delivered(self, request, queryset):
+        updated = queryset.update(status='delivered')
+        self.message_user(request, f'Đã cập nhật {updated} đơn hàng thành "Đã giao hàng"')
+    mark_as_delivered.short_description = "📦 Đánh dấu đã giao hàng"
+
+    def mark_as_cancelled(self, request, queryset):
+        updated = queryset.update(status='cancelled')
+        self.message_user(request, f'Đã cập nhật {updated} đơn hàng thành "Đã hủy"')
+    mark_as_cancelled.short_description = "❌ Đánh dấu đã hủy"
     
     def order_summary(self, obj):
         items_html = ""
